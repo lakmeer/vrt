@@ -52,7 +52,7 @@ export class SceneManager
     root-axis = new THREE.AxisHelper 0.5
     axis.position.z = @registration.position.z
     root-axis.position.z = @root.position.z
-    @registration.add grid, axis, root-axis
+    @registration.add grid, axis #, root-axis
 
   enable-shadow-casting: ->
     @renderer.shadow-map-soft     = yes

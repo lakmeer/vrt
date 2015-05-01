@@ -23,25 +23,26 @@ rows-to-cols = (rows) ->
 #
 
 export class GuideLines extends Base
-  (@opts, gs) ->
+  ({ grid-size }:opts, gs) ->
     super ...
+
+    width  = grid-size * gs.arena.width
+    height = grid-size * gs.arena.height
 
     @lines = []
 
-    { width, height } = gs.arena
-
     mesh = new THREE.Geometry!
-    mesh.vertices.push(
-      new THREE.Vector3(0, 0, 0),
-      new THREE.Vector3(0, height, 0))
-
-    @registration.position.x = width / -2 + 0.5
+    mesh.vertices.push( new THREE.Vector3(0, 0, 0), new THREE.Vector3(0, height, 0))
 
     for i from 0 to 9
       line = new THREE.Line mesh, line-materials[i]
-      line.position <<< x: i, y: 0
+      line.position <<< x: i * grid-size, y: 0
       @lines.push line
       @registration.add line
+
+    @registration.position.x = width / -2 + 0.5 * grid-size
+
+    @add-registration-helper!
 
   show-beam: (brick) ->
     for line in @lines
@@ -55,7 +56,4 @@ export class GuideLines extends Base
   dance: (time) ->
     for line, i in @lines
       line.material = line-materials[(i + floor time / 100) % 8]
-
-
-
 

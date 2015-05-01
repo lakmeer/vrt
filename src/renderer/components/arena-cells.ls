@@ -14,27 +14,28 @@
 
 export class ArenaCells extends Base
 
-  (@opts, gs) ->
+  ({ block-size, grid-size }:opts, gs) ->
 
     super ...
 
-    { width, height } = gs.arena
+    width  = grid-size * gs.arena.width
+    height = grid-size * gs.arena.height
 
-    @geom.box = new THREE.BoxGeometry 0.9, 0.9, 0.9
+    @geom.box = new THREE.BoxGeometry block-size, block-size, block-size
     @mats.zap = new THREE.MeshLambertMaterial color: 0xffffff, emissive: 0x999999
 
     @offset = new THREE.Object3D
     @registration.add @offset
 
     # Flip and position correctly
-    @registration.position <<< x: width/-2 + 0.5, y: height - 0.5
+    @registration.position <<< x: width/-2 + 0.5 * grid-size, y: height - 0.5 * grid-size
     @registration.rotation.x = pi
 
     @cells =
       for row, y in gs.arena.cells
         for cell, x in row
           cube = new THREE.Mesh @geom.box, @mats.normal
-          cube.position <<< { x, y }
+          cube.position.set x * grid-size, y * grid-size, 0
           cube.visible = false
           @offset.add cube
           cube

@@ -1,5 +1,5 @@
 
-{ id, log, max } = require \std
+{ id, log, max, rand } = require \std
 
 { Base }           = require \./base
 { Frame }          = require \./frame
@@ -36,6 +36,11 @@ export class Arena extends Base
       next-brick  : new BrickPreview   @opts, gs
       particles   : new ParticleEffect @opts, gs
 
+    for name, part of @parts => part.add-to @registration
+
+    @add-registration-helper!
+
+    @registration.position.z = -1 * (@opts.camera-distance-from-edge + @opts.arena-distance-from-edge + @opts.block-size/2)
 
   jolt: ({ rows-to-remove, timers }:gs) ->
     p =
@@ -50,34 +55,33 @@ export class Arena extends Base
     jolt = -1 * p * (1 + zz) * @opts.hard-drop-jolt-amount
 
   jitter: ({ rows-to-remove }) ->
-    zz     = @s * rows-to-remove.length / 20
+    zz     = rows-to-remove.length * @opts.grid-size / 40  # Jitter size = 10% - 40% of block size
     jitter = [ (rand -zz, zz), (rand -zz, zz) ]
 
-  zap-lines: ({ arena, rows-to-remove, timers }:gs) ->
-    jolt   = @jolt gs
-    jitter = @jitter gs
+  zap-lines: ({ arena, rows-to-remove, timers }:gs, position-receiving-jolt) ->
 
     @parts.arena-cells.show-zap-effect jolt, gs
 
-    @auto-rotate-debug-camera gs
-
-    # if rows were only just begun to be removed this frame, spawn particles,
+    # If rows were only just begun to be removed this frame, spawn particles,
     # but don't spawn them other times (just update them)
     if gs.flags.rows-removed-this-frame
       @parts.particles.reset!
       @parts.particles.prepare rows-to-remove
       @state.frames-since-rows-removed = 0
 
-    #@parts.particles.update timers.removal-animation.progress,
-      #@state.frames-since-rows-removed, gs.Δt
+    # Jitter n' Jolt
+    jolt   = @jolt gs
+    jitter = @jitter gs
+    position-receiving-jolt.x = jitter.0
+    position-receiving-jolt.y = jitter.1 #+ jolt  # Doesn't work somehow?
 
-    @scene-man.registration.position.x = jitter.0
-    @scene-man.registration.position.y = jitter.1 #+ jolt
+    # Dance
+    @parts.guide-lines.dance gs.elapsed-time
 
   update-particles: ({ timers }:gs) ->
     @parts.particles.update timers.removal-animation.progress, @state.frames-since-rows-removed, gs.Δt
 
-  update: ({ arena, brick }:gs) ->
+  update: ({ arena, brick }:gs, position-receiving-jolt) ->
 
     # Render current arena state to blocks
     @parts.arena-cells.update-cells arena.cells
@@ -94,5 +98,8 @@ export class Arena extends Base
     @parts.next-brick.update-wiggle gs, gs.elapsed-time
 
     # Return jolt effect value
-    @jolt gs
+    position-receiving-jolt.y = @jolt gs
+
+    # Update internal state
+    @state.frames-since-rows-removed += 1
 

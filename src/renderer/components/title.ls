@@ -35,14 +35,12 @@ export class Title extends Base
       * [ 1 0 1 2 0 2 3 0 3 0 0 4 0 5 0 ]
       * [ 1 1 1 2 0 2 3 3 3 4 4 4 0 5 0 ]
 
-  (@opts, gs) ->
+  ({ block-size, grid-size }:opts, gs) ->
     super ...
 
     text       = block-text.vrt
-    grid-size  = @opts.block-size
-    margin     = @opts.block-gap / 2
-    box-size   = grid-size - @opts.block-gap
-    height     = box-size * gs.arena.height
+    margin     = (grid-size - block-size) / 2
+    height     = grid-size * gs.arena.height
 
     # State
     @height = height
@@ -54,13 +52,13 @@ export class Title extends Base
     @word.position.z = grid-size/2
 
     # Create blocks to spell words
-    @geom.box = new THREE.BoxGeometry box-size * 0.9, box-size * 0.9, box-size * 0.9
+    @geom.box = new THREE.BoxGeometry block-size * 0.9, block-size * 0.9, block-size * 0.9
 
     for row, y in text
       for cell, x in row
         if cell
           box = new THREE.Mesh @geom.box, mesh-materials[cell]
-          box.position.set grid-size * x + @opts.block-gap, grid-size * (text.length/2 - y) + @opts.block-gap/2, grid-size/-2
+          box.position.set grid-size * x + margin, grid-size * (text.length/2 - y) + margin, grid-size/-2
           @word.add box
 
     # Bounding box visualiser

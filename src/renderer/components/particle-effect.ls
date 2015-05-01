@@ -1,25 +1,24 @@
 
 # Require
 
-{ id, log, pi, sin, cos, floor } = require \std
+{ id, log, pi, sin, cos, rand, floor } = require \std
 { Base } = require \./base
 { mesh-materials } = require \../palette
 
 
-size     = 0.006
-speed    = 6
-lifespan = 2000
-
 
 export class ParticleBurst extends Base
+
+  speed    = 2
+  lifespan = 2000
 
   (@opts, {{ width, height }:arena }:gs) ->
 
     super ...
 
-    @last-p = 10
+    @size   = @opts.zap-particle-size
 
-    particles  = 400
+    particles  = 800
     geometry   = new THREE.BufferGeometry!
     color      = new THREE.Color!
 
@@ -38,27 +37,27 @@ export class ParticleBurst extends Base
     geometry.add-attribute \color,    @col-attr
     geometry.compute-bounding-sphere!
 
-    material = new THREE.PointCloudMaterial size: size, vertex-colors: THREE.VertexColors
+    material = new THREE.PointCloudMaterial size: @size, vertex-colors: THREE.VertexColors
     system   = new THREE.PointCloud geometry, material
     @root.add system
 
   reset: ->
+    grid = @opts.grid-size
     for i from 0 til @positions.length by 3
-      n = 10
       x = 4.5 - Math.random! * 9
       z = 0.5 - Math.random!
-      @positions[ i + 0 ] = x
+      @positions[ i + 0 ] = x * grid
       @positions[ i + 1 ] = 0
-      @positions[ i + 2 ] = z
-      @velocities[ i + 0 ] = x / 9 * 10
-      @velocities[ i + 1 ] = Math.random! * 2
-      @velocities[ i + 2 ] = z * 10
+      @positions[ i + 2 ] = z * grid
+      @velocities[ i + 0 ] = x / 10
+      @velocities[ i + 1 ] = rand grid, 10 * grid
+      @velocities[ i + 2 ] = z
       @colors[ i + 0 ] = 1
       @colors[ i + 1 ] = 1
       @colors[ i + 2 ] = 1
       @lifespans[i/3] = 0  # Start dead until I say otherwise
 
-  accelerate-particle: (i, t, p) ->
+  accelerate-particle: (i, t, p, bbx, bbz) ->
 
     # Die
     if @lifespans[i/3] <= 0
@@ -83,8 +82,8 @@ export class ParticleBurst extends Base
     vz1 = 0 * t + vz
 
     # Bounce
-    if py1 < size/2
-      py1 = size/2
+    if py1 < @size/2 and -bbx < px1 < bbx and (-bbz + 1.9 * @opts.grid-size) < pz1 < (bbz + 1.9 * @opts.grid-size)
+      py1 = @size/2
       vx1 *= 0.7
       vy1 *= -0.6
       vz1 *= 0.7
@@ -104,17 +103,18 @@ export class ParticleBurst extends Base
 
   set-height: (y) ->
     @reset!
+    grid = @opts.grid-size
     for i from 0 til @positions.length by 3
       @lifespans[i/3] = lifespan/2 + Math.random! * lifespan/2
       @maxlifes[i/3] = @lifespans[i/3]
-      @positions[i + 1] = y + Math.random! - 0.5
+      @positions[i + 1] = (y + Math.random! - 0.5) * grid
 
   update: (p, Δt) ->
-    #if p < @last-p then @reset!
-    #@last-p = p
+    bounce-bounds-x = @opts.desk-size.0 / 2
+    bounce-bounds-z = @opts.desk-size.1 / 2
 
     for i from 0 til @positions.length by 3
-      @accelerate-particle i, Δt, 1
+      @accelerate-particle i, Δt, 1, bounce-bounds-x, bounce-bounds-z
       @lifespans[i/3] -= Δt
 
     @pos-attr.needs-update = true

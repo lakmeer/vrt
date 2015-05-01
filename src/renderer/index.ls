@@ -7,8 +7,9 @@ THREE = require \three-js-vr-extensions # puts THREE in global scope
 
 { Palette }                    = require \./palette
 { SceneManager }               = require \./scene-manager
-{ Arena, Table, StartMenu, Lighting } = require \./components
 { DebugCameraPositioner }      = require \./debug-camera
+
+{ Arena, Table, StartMenu, FailScreen, Lighting } = require \./components
 
 { TrackballControls } = require \../../lib/trackball-controls.js
 
@@ -31,10 +32,11 @@ export class ThreeJsRenderer
 
     # Build scene
     @parts =
-      arena      : new Arena     @opts, gs
       table      : new Table     @opts, gs
-      lighting   : new Lighting  @opts, gs
-      start-menu : new StartMenu @opts, gs
+      lighting    : new Lighting  @opts, gs
+      arena       : new Arena     @opts, gs
+      start-menu  : new StartMenu @opts, gs
+      fail-screen : new FailScreen @opts, gs
 
     for name, part of @parts => @scene.add part
 
@@ -44,9 +46,6 @@ export class ThreeJsRenderer
     trackball-target.position.z = -@opts.camera-distance-from-edge
     @trackball = new THREE.TrackballControls @scene.camera, trackball-target
 
-    #@scene.camera.position.z = 10
-    @scene.camera.look-at @parts.start-menu.title
-
     # Reset VR Controls
     @scene.controls.reset-sensor!
 
@@ -55,7 +54,7 @@ export class ThreeJsRenderer
     # We do this by moving the scene away instead of positioning the camera,
     # because if the VR mode kicks in, VRControls will set the camera position
     # based on the HMD's tracking data, relative to 0,0,0, not to your new pos.
-    @scene.registration.position.set 0, -@opts.camera-elevation, -@opts.camera-distance-from-edge
+    @scene.root.position.set 0, -@opts.camera-elevation, -@opts.camera-distance-from-edge * 2
 
     # Helpers
     @scene.show-helpers!
@@ -98,12 +97,11 @@ export class ThreeJsRenderer
     # Update particles all the time, cos they're physically simulated
     @parts.arena.update-particles gs
 
+    # Update private state
+    @state.last-seen-state = gs.metagame-state
+
     # Finally, render the scene
     @scene.render!
-
-    # Update private state
-    @state.frames-since-rows-removed += 1
-    @state.last-seen-state = gs.metagame-state
 
     # Lighting test
     #@parts.lighting.root.position.x = 0.5 * sin gs.elapsed-time / 1000

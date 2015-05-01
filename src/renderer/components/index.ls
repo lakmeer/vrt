@@ -7,5 +7,7 @@ export { Arena }     = require \./arena
 export { Title }     = require \./title
 export { Table }     = require \./table
 export { Lighting }  = require \./lighting
-export { StartMenu } = require \./start-menu
+
+export { StartMenu }  = require \./start-menu
+export { FailScreen } = require \./fail-screen
 

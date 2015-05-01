@@ -52,13 +52,12 @@ export class StartMenu extends Base
       @options.push quad
       @registration.add quad
 
+    # Add title subcomponent
     @title = new Title @opts, gs
     @title.add-to @registration
 
     # Move into position on table
     @registration.position.z = -1 * (@opts.camera-distance-from-edge + @opts.arena-distance-from-edge + @opts.block-size/2)
-
-    @add-registration-helper!
 
   create-option-quad: (option, ix) ->
     image = canvas-texture text: option.text, width: 60, height: 10
