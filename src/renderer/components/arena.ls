@@ -39,14 +39,7 @@ export class Arena extends Base
     @registration.position.z = -1 * (@opts.camera-distance-from-edge + @opts.arena-distance-from-edge + @opts.block-size/2)
 
   jolt: ({ rows-to-remove, timers }:gs) ->
-    p =
-      if timers.removal-animation.active
-        (1 - timers.removal-animation.progress)
-      else if timers.hard-drop-effect.progress
-        max (1 - timers.hard-drop-effect.progress)
-      else
-        0
-
+    p = max 0, (1 - timers.hard-drop-effect.progress)
     zz = rows-to-remove.length
     jolt = -1 * p * (1 + zz) * @opts.hard-drop-jolt-amount
 
@@ -71,7 +64,7 @@ export class Arena extends Base
     jitter = @jitter gs
 
     position-receiving-jolt.x = jitter.0
-    position-receiving-jolt.y = jitter.1  # Doesn't work somehow?
+    position-receiving-jolt.y = jitter.1 + jolt # Doesn't work somehow?
 
     # Dance
     @parts.guide-lines.dance gs.elapsed-time

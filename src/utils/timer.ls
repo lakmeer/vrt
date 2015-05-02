@@ -23,6 +23,7 @@ export class Timer
   [ TIMER_ACTIVE, TIMER_EXPIRED ] = [ 0, 1 ]
 
   (@target-time = 1000, begin = no) ->
+    if @target-time is 0 then throw "Timer::reset - target time must be non-zero"
     @current-time = 0
     @state = if begin then TIMER_ACTIVE else TIMER_EXPIRED
     @active = begin
@@ -44,11 +45,13 @@ export class Timer
         @state = TIMER_EXPIRED
 
   reset: (time = @target-time) ->
+    if time is 0 then throw "Timer::reset - target time must be non-zero"
     @current-time = 0
     @target-time = time
     @state = TIMER_ACTIVE
 
   reset-with-remainder: (time = @target-time) ->
+    if time is 0 then throw "Timer::reset - target time must be non-zero"
     @current-time = @current-time - time
     @target-time = time
     @state = TIMER_ACTIVE

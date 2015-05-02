@@ -29,19 +29,20 @@ export class ParticleBurst extends Base
     @alphas     = new Float32Array particles
     @maxlifes   = new Float32Array particles
 
-    @pos-attr = new THREE.BufferAttribute @positions, 3
-    @col-attr = new THREE.BufferAttribute @colors, 3
+    @pos-attr   = new THREE.BufferAttribute @positions, 3
+    @col-attr   = new THREE.BufferAttribute @colors, 3
     @alpha-attr = new THREE.BufferAttribute @alphas, 1
 
     @reset!
 
     geometry.add-attribute \position, @pos-attr
     geometry.add-attribute \color,    @col-attr
-    geometry.add-attribute \alpha,    @alpha-attr
+    geometry.add-attribute \opacity,  @alpha-attr
     geometry.compute-bounding-sphere!
 
     material = new THREE.PointCloudMaterial do
       size: @size
+      transparent: true
       vertex-colors: THREE.VertexColors
 
     @root.add new THREE.PointCloud geometry, material

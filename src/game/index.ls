@@ -72,7 +72,7 @@ export class TetrisGame
             gs.hard-drop-distance += 1
             brick.current.pos.1 += 1
           gs.input-state = []
-          gs.timers.hard-drop-effect.reset gs.hard-drop-distance * 10
+          gs.timers.hard-drop-effect.reset 1 + gs.hard-drop-distance * 10 # Don't divide by zero
           gs.timers.drop-timer.time-to-expiry = -1
         | \debug-1, \debug-2, \debug-3, \debug-4 =>
           amt = parse-int key.replace /\D/g, ''
@@ -111,8 +111,8 @@ export class TetrisGame
       # Wait for animation
       gs.metagame-state = \remove-lines
       gs.flags.rows-removed-this-frame = true
-      gs.timers.removal-animation.reset complete-rows.length * 100
       gs.rows-to-remove = complete-rows
+      gs.timers.removal-animation.reset 10 + 3 ** gs.rows-to-remove.length
 
       # Add any dropped lines to score
       Core.compute-score gs.score, gs.rows-to-remove
