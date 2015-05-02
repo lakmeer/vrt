@@ -27,15 +27,21 @@ export class Brick extends Base
   (@opts, gs) ->
     super ...
 
-    { width, height } = gs.arena
+    size = @opts.block-size
+    grid = @opts.grid-size
 
-    @geom.brick-box = new THREE.BoxGeometry 0.9, 0.9, 0.9
+    width  = grid * gs.arena.width
+    height = grid * gs.arena.height
+
+    @geom.brick-box = new THREE.BoxGeometry size, size, size
 
     @registration.rotation.x = pi
-    @registration.position <<< x: width/-2 + 0.5, y: height - 0.5
+    @registration.position.set width/-2 + 0.5 * grid, height - 0.5 * grid, 0
 
     @brick = new THREE.Object3D
     @registration.add @brick
+
+    @add-registration-helper!
 
     @cells =
       for i from 0 to 3
@@ -45,14 +51,17 @@ export class Brick extends Base
         cube
 
   display-shape: ({ shape }, ix = 0) ->
+    grid   = @opts.grid-size
+    margin = (@opts.grid-size - @opts.block-size) / 2
+
     for row, y in shape
-      for cell, x in row
-        if cell
-          @cells[ix]
-            ..material = mesh-materials[cell]
-            ..position <<< { x, y }
-          ix += 1
+      for cell, x in row when cell
+        @cells[ix]
+          ..material = mesh-materials[cell]
+          ..position.set x * grid + margin, y * grid + margin, 0
+        ix += 1
 
   update-pos: ([ x, y ]) ->
-    @brick.position <<< { x, y }
+    grid = @opts.grid-size
+    @brick.position.set grid * x, grid * y, 0
 

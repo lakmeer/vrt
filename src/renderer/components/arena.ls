@@ -6,7 +6,6 @@
 { Brick }          = require \./brick
 { GuideLines }     = require \./guide-lines
 { ArenaCells }     = require \./arena-cells
-{ BrickPreview }   = require \./brick-preview
 { ParticleEffect } = require \./particle-effect
 
 
@@ -33,12 +32,9 @@ export class Arena extends Base
       guide-lines : new GuideLines     @opts, gs
       arena-cells : new ArenaCells     @opts, gs
       this-brick  : new Brick          @opts, gs
-      next-brick  : new BrickPreview   @opts, gs
       particles   : new ParticleEffect @opts, gs
 
     for name, part of @parts => part.add-to @registration
-
-    @add-registration-helper!
 
     @registration.position.z = -1 * (@opts.camera-distance-from-edge + @opts.arena-distance-from-edge + @opts.block-size/2)
 
@@ -54,7 +50,7 @@ export class Arena extends Base
     zz = rows-to-remove.length
     jolt = -1 * p * (1 + zz) * @opts.hard-drop-jolt-amount
 
-  jitter: ({ rows-to-remove }) ->
+  jitter: ({ rows-to-remove }:gs) ->
     zz     = rows-to-remove.length * @opts.grid-size / 40  # Jitter size = 10% - 40% of block size
     jitter = [ (rand -zz, zz), (rand -zz, zz) ]
 
@@ -92,10 +88,6 @@ export class Arena extends Base
 
     # Show lines
     @parts.guide-lines.show-beam brick.current
-
-    # Update preview brick
-    @parts.next-brick.display-shape brick.next
-    @parts.next-brick.update-wiggle gs, gs.elapsed-time
 
     # Return jolt effect value
     position-receiving-jolt.y = @jolt gs

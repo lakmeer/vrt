@@ -42,7 +42,6 @@ export class Lighting extends Base
     @spotlight.shadow-camera-far = 2500
     @spotlight.shadow-camera-fov = 50
 
-
   show-helpers: ->
     @root.add new THREE.PointLightHelper @light, main-light-distance
     @root.add new THREE.SpotLightHelper @spotlight

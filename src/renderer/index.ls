@@ -1,7 +1,8 @@
 
 # Require
 
-{ id, log, sin, lerp, rand, floor, map } = require \std
+{ id, log, pi, sin, cos, lerp, rand, floor, map } = require \std
+{ Ease } = require \std
 
 THREE = require \three-js-vr-extensions # puts THREE in global scope
 
@@ -9,7 +10,7 @@ THREE = require \three-js-vr-extensions # puts THREE in global scope
 { SceneManager }               = require \./scene-manager
 { DebugCameraPositioner }      = require \./debug-camera
 
-{ Arena, Table, StartMenu, FailScreen, Lighting } = require \./components
+{ Arena, Table, StartMenu, FailScreen, Lighting, BrickPreview } = require \./components
 
 { TrackballControls } = require \../../lib/trackball-controls.js
 
@@ -32,13 +33,17 @@ export class ThreeJsRenderer
 
     # Build scene
     @parts =
-      table      : new Table     @opts, gs
-      lighting    : new Lighting  @opts, gs
-      arena       : new Arena     @opts, gs
-      start-menu  : new StartMenu @opts, gs
-      fail-screen : new FailScreen @opts, gs
+      table       : new Table        @opts, gs
+      lighting    : new Lighting     @opts, gs
+      arena       : new Arena        @opts, gs
+      start-menu  : new StartMenu    @opts, gs
+      fail-screen : new FailScreen   @opts, gs
+      next-brick  : new BrickPreview @opts, gs
 
     for name, part of @parts => @scene.add part
+
+    # Arrangement of scene components
+    @parts.next-brick.root.position.set 0, 0, -@opts.camera-distance-from-edge
 
     # Trackball
     trackball-target = new THREE.Object3D
@@ -58,6 +63,30 @@ export class ThreeJsRenderer
 
     # Helpers
     @scene.show-helpers!
+
+    #@scene.camera.position.z = -0.7
+
+    # Test
+
+    return
+    i = 0
+    make-cube = (map, s = 0.2, color = 0x441122) ->
+      geo = new THREE.CubeGeometry s, s, s
+      mat = new THREE.MeshPhongMaterial do
+        metal: no
+        color: color
+        specular: color
+        shininess: 100 #50 + i * 50
+        normal-map: THREE.ImageUtils.load-texture "../assets/#map"
+        normal-scale: new THREE.Vector2 1, 1
+      i += 1
+      new THREE.Mesh geo, mat
+
+    @scene.add @cube-a = make-cube \tile.nrm.png
+    @scene.add @cube-b = make-cube \tile.nrm.png
+
+    @cube-a.position.set -0.2, 0.5, -0.6
+    @cube-b.position.set  0.2, 0.5, -0.6
 
   append-to: (host) ->
     host.append-child @scene.dom-element
@@ -86,13 +115,32 @@ export class ThreeJsRenderer
     # Update scene based on current metagamestate.
     # Functions which take the scene registration position will change it
     switch gs.metagame-state
-    | \no-game      => log \no-game
-    | \remove-lines => @parts.arena.zap-lines gs, @scene.registration.position
-    | \game         => @parts.arena.update    gs, @scene.registration.position
-    | \start-menu   => @parts.start-menu.update gs
-    | \pause-menu   => @parts.pause-menu.update gs
-    | \failure      => @parts.fail-screen.update gs
-    | otherwise     => log "ThreeJsRenderer::render - Unknown metagamestate:", gs.metagame-state
+    | \no-game =>
+      log \no-game
+
+    | \remove-lines =>
+      rows = gs.rows-to-remove.length
+      p = gs.timers.removal-animation.progress
+      gs.slowdown = 1 + Ease.quint-in p, 2 ** rows, 0
+      @parts.arena.zap-lines gs, @scene.registration.position
+
+    | \game =>
+      gs.slowdown = 1
+      @parts.arena.update    gs, @scene.registration.position
+      @parts.next-brick.display-shape gs.brick.next
+      @parts.next-brick.update-wiggle gs, gs.elapsed-time
+
+    | \start-menu =>
+      @parts.start-menu.update gs
+
+    | \pause-menu =>
+      @parts.pause-menu.update gs
+
+    | \failure =>
+      @parts.fail-screen.update gs
+
+    | otherwise =>
+      log "ThreeJsRenderer::render - Unknown metagamestate:", gs.metagame-state
 
     # Update particles all the time, cos they're physically simulated
     @parts.arena.update-particles gs
@@ -103,6 +151,13 @@ export class ThreeJsRenderer
     # Finally, render the scene
     @scene.render!
 
+    # Test
+    #@cube-a.rotation.y = gs.elapsed-time / 5000
+    #@cube-a.rotation.x = gs.elapsed-time / 10000
+    #@cube-b.rotation.y = gs.elapsed-time / 5000
+    #@cube-b.rotation.x = gs.elapsed-time / 10000
+
     # Lighting test
-    #@parts.lighting.root.position.x = 0.5 * sin gs.elapsed-time / 1000
+    #@parts.lighting.root.position.x = 0.5 * sin gs.elapsed-time / 100
+    #@parts.lighting.root.position.y = 0.5 * cos gs.elapsed-time / 100
 

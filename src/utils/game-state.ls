@@ -21,6 +21,7 @@ export class GameState
     elapsed-time: 0
     elapsed-frames: 0
     rows-to-remove: []
+    slowdown: 1
 
     flags:
       rows-removed-this-frame: no

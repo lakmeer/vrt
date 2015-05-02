@@ -3,6 +3,9 @@
 
 THREE = require \three-js-vr-extensions # puts THREE in global scope
 
+{ map } = require \std
+
+pluck = (p, o) --> o[p]
 
 # Techinicolor colors
 
@@ -16,30 +19,29 @@ export brown   = [ 0xffbb33 0xffcc88 0xbb9900 0x555511 ]
 export yellow  = [ 0xeeee11 0xffffaa 0xccbb00 0x555511 ]
 export cyan    = [ 0x44ddff 0xaae3ff 0x00aacc 0x006699 ]
 
-export tile-colors =
-  [ neutral.2, red.0, orange.0, yellow.0, green.0, cyan.0, blue.2, magenta.0, \white ]
+color-order = [ neutral, red, orange, yellow, green, cyan, blue, magenta ]
 
-brushed-metal-bump = THREE.ImageUtils.load-texture \../assets/brushed-metal.bmp.jpg
-brushed-metal-bump.repeat.set 0.01, 0.01
+export tile-colors = map pluck(2), color-order
+export spec-colors = map pluck(0), color-order
 
 normal-maps = [
-  THREE.ImageUtils.load-texture \../assets/tiles.nrm.jpg
-  THREE.ImageUtils.load-texture \../assets/tiles.nrm.jpg
-  THREE.ImageUtils.load-texture \../assets/grid.nrm.png
-  THREE.ImageUtils.load-texture \../assets/motif.nrm.png
-  THREE.ImageUtils.load-texture \../assets/octagons.nrm.png
-  THREE.ImageUtils.load-texture \../assets/panels.nrm.jpg
-  THREE.ImageUtils.load-texture \../assets/tread.nrm.jpg
-  THREE.ImageUtils.load-texture \../assets/wood.nrm.jpg
+  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
 ]
 
-normal-adjust = new THREE.Vector2 -0.5, 0.5
+normal-adjust = new THREE.Vector2 1, 1
 
 export mesh-materials = for color, i in tile-colors
   new THREE.MeshPhongMaterial do
     metal: true
     color: color
-    specular: color
+    specular: spec-colors[i]
     shininess: 100
     normal-map: normal-maps[i]
     normal-scale: normal-adjust

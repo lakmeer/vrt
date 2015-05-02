@@ -27,11 +27,11 @@ export class BrickPreview extends Brick
 
   display-shape: (brick) ->
     super ...
+    grid = @opts.grid-size
     [ x, y ] = pretty-offset[ brick.type ]
-    @registration.position.x = -1.5 + x
-    @registration.position.y = -1.5 + y
+    @registration.position.x = (-1.5 + x) * grid
+    @registration.position.y = (-1.5 + y) * grid
 
   update-wiggle: (brick, elapsed-time) ->
     @root.rotation.y = 0.2 * sin elapsed-time / 500
-
 

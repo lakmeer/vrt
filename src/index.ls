@@ -90,12 +90,12 @@ test-easing = ->
 #
 
 frame-driver = new FrameDriver (Δt, time, frame) ->
-  game-state.Δt             = Δt / game-opts.time-factor
-  game-state.elapsed-time   = time / game-opts.time-factor
+  game-state.Δt             = Δt / game-opts.time-factor / game-state.slowdown
+  game-state.elapsed-time   = time / game-opts.time-factor / game-state.slowdown
   game-state.elapsed-frames = frame
   game-state.input-state    = input-handler.changes-since-last-frame!
 
-  Timer.update-all Δt / game-opts.time-factor
+  Timer.update-all Δt / game-opts.time-factor / game-state.slowdown
 
   game-state := tetris-game.run-frame game-state, Δt
   renderer.render game-state, render-opts

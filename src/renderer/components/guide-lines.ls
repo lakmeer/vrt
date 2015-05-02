@@ -42,8 +42,6 @@ export class GuideLines extends Base
 
     @registration.position.x = width / -2 + 0.5 * grid-size
 
-    @add-registration-helper!
-
   show-beam: (brick) ->
     for line in @lines
       line.material = line-materials[0]
