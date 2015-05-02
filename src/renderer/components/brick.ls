@@ -41,8 +41,6 @@ export class Brick extends Base
     @brick = new THREE.Object3D
     @registration.add @brick
 
-    @add-registration-helper!
-
     @cells =
       for i from 0 to 3
         cube = new THREE.Mesh @geom.brick-box, @mats.normal

@@ -80,7 +80,7 @@ export class TetrisGame
           gs.rows-to-remove = for i from gs.arena.height - amt to gs.arena.height - 1 => i
           gs.metagame-state = \remove-lines
           gs.flags.rows-removed-this-frame = yes
-          gs.timers.removal-animation.reset gs.rows-to-remove.length * 20
+          gs.timers.removal-animation.reset 10 + 3 ** gs.rows-to-remove.length
         | \debug-5 =>  # Sets up tetris scenario
           pos = gs.brick.current.pos
           gs.brick.current = Core.new-brick 6

@@ -47,6 +47,11 @@ export class Base
 
     log 'Registration helper for:', this
 
+  add-box-helper: (thing) ->
+    bbox = new THREE.BoundingBoxHelper thing, 0x5555ff
+    bbox.update!
+    @root.add bbox
+
   update-registration-helper: ->
 
   show-bounds: (scene) ->

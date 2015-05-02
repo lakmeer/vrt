@@ -26,21 +26,31 @@ export class ParticleBurst extends Base
     @velocities = new Float32Array particles * 3
     @colors     = new Float32Array particles * 3
     @lifespans  = new Float32Array particles
+    @alphas     = new Float32Array particles
     @maxlifes   = new Float32Array particles
 
     @pos-attr = new THREE.BufferAttribute @positions, 3
     @col-attr = new THREE.BufferAttribute @colors, 3
+    @alpha-attr = new THREE.BufferAttribute @alphas, 1
 
     @reset!
 
     geometry.add-attribute \position, @pos-attr
     geometry.add-attribute \color,    @col-attr
+    geometry.add-attribute \alpha,    @alpha-attr
     geometry.compute-bounding-sphere!
 
-    material = new THREE.PointCloudMaterial size: @size, vertex-colors: THREE.VertexColors
-    system   = new THREE.PointCloud geometry, material
-    @root.add system
+    material = new THREE.PointCloudMaterial do
+      size: @size
+      vertex-colors: THREE.VertexColors
 
+    @root.add new THREE.PointCloud geometry, material
+
+
+  # Reset
+  #
+  # Reloads all particles into x/z position, primes velocities
+  # to explode in an appropriate random direction when released.
   reset: ->
     grid = @opts.grid-size
     for i from 0 til @positions.length by 3
@@ -57,6 +67,9 @@ export class ParticleBurst extends Base
       @colors[ i + 2 ] = 1
       @lifespans[i/3] = 0  # Start dead until I say otherwise
 
+  # Accelerate Particle
+  #
+  # Runs bounce physics and color aging on individual particles
   accelerate-particle: (i, t, p, bbx, bbz) ->
 
     # Die
@@ -100,6 +113,8 @@ export class ParticleBurst extends Base
     @colors[ i + 0 ] = l
     @colors[ i + 1 ] = l*l
     @colors[ i + 2 ] = l*l*l*l
+
+    @alphas[i/3] = l
 
   set-height: (y) ->
     @reset!

@@ -51,12 +51,13 @@ export class Arena extends Base
     jolt = -1 * p * (1 + zz) * @opts.hard-drop-jolt-amount
 
   jitter: ({ rows-to-remove }:gs) ->
+    p      = 1 - gs.timers.removal-animation.progress
     zz     = rows-to-remove.length * @opts.grid-size / 40  # Jitter size = 10% - 40% of block size
-    jitter = [ (rand -zz, zz), (rand -zz, zz) ]
+    jitter = [ p*(rand -zz, zz), p*(rand -zz, zz) ]
 
   zap-lines: ({ arena, rows-to-remove, timers }:gs, position-receiving-jolt) ->
 
-    @parts.arena-cells.show-zap-effect jolt, gs
+    @parts.arena-cells.show-zap-effect gs
 
     # If rows were only just begun to be removed this frame, spawn particles,
     # but don't spawn them other times (just update them)
@@ -68,8 +69,9 @@ export class Arena extends Base
     # Jitter n' Jolt
     jolt   = @jolt gs
     jitter = @jitter gs
+
     position-receiving-jolt.x = jitter.0
-    position-receiving-jolt.y = jitter.1 #+ jolt  # Doesn't work somehow?
+    position-receiving-jolt.y = jitter.1  # Doesn't work somehow?
 
     # Dance
     @parts.guide-lines.dance gs.elapsed-time

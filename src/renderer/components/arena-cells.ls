@@ -45,7 +45,7 @@ export class ArenaCells extends Base
       box.material = @mats.zap
       box.visible = state
 
-  show-zap-effect: (jolt, { arena, rows-to-remove, timers }:gs) ->
+  show-zap-effect: ({ arena, rows-to-remove, timers }:gs) ->
     on-off = !!((floor timers.removal-animation.current-time) % 2)
     for row-ix in rows-to-remove
       @toggle-row-of-cells row-ix, on-off

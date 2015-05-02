@@ -64,30 +64,6 @@ export class ThreeJsRenderer
     # Helpers
     @scene.show-helpers!
 
-    #@scene.camera.position.z = -0.7
-
-    # Test
-
-    return
-    i = 0
-    make-cube = (map, s = 0.2, color = 0x441122) ->
-      geo = new THREE.CubeGeometry s, s, s
-      mat = new THREE.MeshPhongMaterial do
-        metal: no
-        color: color
-        specular: color
-        shininess: 100 #50 + i * 50
-        normal-map: THREE.ImageUtils.load-texture "../assets/#map"
-        normal-scale: new THREE.Vector2 1, 1
-      i += 1
-      new THREE.Mesh geo, mat
-
-    @scene.add @cube-a = make-cube \tile.nrm.png
-    @scene.add @cube-b = make-cube \tile.nrm.png
-
-    @cube-a.position.set -0.2, 0.5, -0.6
-    @cube-b.position.set  0.2, 0.5, -0.6
-
   append-to: (host) ->
     host.append-child @scene.dom-element
 
@@ -121,8 +97,9 @@ export class ThreeJsRenderer
     | \remove-lines =>
       rows = gs.rows-to-remove.length
       p = gs.timers.removal-animation.progress
-      gs.slowdown = 1 + Ease.quint-in p, 2 ** rows, 0
+      gs.slowdown = 1 + Ease.quint-in p, 10, 0
       @parts.arena.zap-lines gs, @scene.registration.position
+      @parts.next-brick.update-wiggle gs, gs.elapsed-time
 
     | \game =>
       gs.slowdown = 1
@@ -151,13 +128,7 @@ export class ThreeJsRenderer
     # Finally, render the scene
     @scene.render!
 
-    # Test
-    #@cube-a.rotation.y = gs.elapsed-time / 5000
-    #@cube-a.rotation.x = gs.elapsed-time / 10000
-    #@cube-b.rotation.y = gs.elapsed-time / 5000
-    #@cube-b.rotation.x = gs.elapsed-time / 10000
-
     # Lighting test
-    #@parts.lighting.root.position.x = 0.5 * sin gs.elapsed-time / 100
-    #@parts.lighting.root.position.y = 0.5 * cos gs.elapsed-time / 100
+    @parts.lighting.root.position.x = 0.5 * sin gs.elapsed-time / 100
+    @parts.lighting.root.position.y = 0.5 * cos gs.elapsed-time / 100
 
