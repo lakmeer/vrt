@@ -43,7 +43,8 @@ export class ThreeJsRenderer
     for name, part of @parts => @scene.add part
 
     # Arrangement of scene components
-    @parts.next-brick.root.position.set 0, 0, -@opts.camera-distance-from-edge
+    @parts.next-brick.root.position.set -@opts.desk-size.1/2, 0, -@opts.preview-distance-from-edge
+    @parts.arena.root.position.set 0, 0, -@opts.arena-distance-from-edge
 
     # Trackball
     trackball-target = new THREE.Object3D
@@ -112,7 +113,7 @@ export class ThreeJsRenderer
     | \remove-lines =>
       rows = gs.rows-to-remove.length
       p = gs.timers.removal-animation.progress
-      gs.slowdown = 1 + Ease.quint-in p, 10, 0
+      gs.slowdown = 1 + Ease.exp-in p, 10, 0
       @parts.arena.zap-lines gs, @scene.registration.position
       @parts.next-brick.update-wiggle gs, gs.elapsed-time
 
@@ -143,6 +144,7 @@ export class ThreeJsRenderer
     # Finally, render the scene
     @scene.render!
 
+    # Testing
     #@ball.rotation.y = gs.elapsed-time / 1000
     #@ball.position.y = 0.5 + 0.2 * sin gs.elapsed-time / 1000
     #@ball.position.x = 0 + 0.2 * cos gs.elapsed-time / 1000

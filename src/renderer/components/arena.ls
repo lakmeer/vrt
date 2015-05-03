@@ -36,7 +36,7 @@ export class Arena extends Base
 
     for name, part of @parts => part.add-to @registration
 
-    @registration.position.z = -1 * (@opts.camera-distance-from-edge + @opts.arena-distance-from-edge + @opts.block-size/2)
+    @registration.position.z = -1 * @opts.block-size/2
 
   jolt: ({ rows-to-remove, timers }:gs) ->
     p = max 0, (1 - timers.hard-drop-effect.progress)
@@ -64,7 +64,7 @@ export class Arena extends Base
     jitter = @jitter gs
 
     position-receiving-jolt.x = jitter.0
-    position-receiving-jolt.y = jitter.1 + jolt # Doesn't work somehow?
+    position-receiving-jolt.y = jitter.1 + jolt / 10 # Doesn't work somehow?
 
     # Dance
     @parts.guide-lines.dance gs.elapsed-time
