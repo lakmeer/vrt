@@ -34,6 +34,10 @@ export class Timer
   expired:~ -> @state is TIMER_EXPIRED
   progress:~ -> @current-time / @target-time
 
+  expire: ->
+    @current-time = @target-time
+    @state = TIMER_EXPIRED
+
   time-to-expiry:~
     -> @target-time - @current-time
     (exp-time) -> @current-time = @target-time - exp-time

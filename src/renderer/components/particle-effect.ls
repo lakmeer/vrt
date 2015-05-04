@@ -10,7 +10,7 @@
 export class ParticleBurst extends Base
 
   speed    = 2
-  lifespan = 2000
+  lifespan = 4000 # actually 2000
 
   (@opts, {{ width, height }:arena }:gs) ->
 

@@ -46,6 +46,5 @@ export class Table extends Base
 
     # Positioning
     @registration.add @table
-    @registration.position.y = thickness / -2
-    @registration.position.z = width / -2
-
+    @registration.position.y = thickness/-2
+    @registration.position.z = depth/-2

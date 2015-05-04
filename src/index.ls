@@ -25,7 +25,7 @@
 game-opts =
   tile-width  : 10
   tile-height : 20
-  time-factor : 10
+  time-factor : 1
 
 render-opts =
   units-per-meter: 1               # Global scaling factor for feel-correctness

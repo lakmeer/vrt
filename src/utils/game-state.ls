@@ -75,6 +75,9 @@ export class GameState
     @timers.failure-reveal-timer  = new Timer @options.title-reveal-time
     @arena = @@new-arena @options.tile-width, @options.tile-height
 
+    # Force hard drop timer to start at end
+    @timers.hard-drop-effect.expire!
+
   @new-arena = (width, height) ->
     cells: for row til height => for cell til width => 0
     width: width

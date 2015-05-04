@@ -21,6 +21,14 @@ THREE = require \three-js-vr-extensions # puts THREE in global scope
 
 export class SceneManager
 
+  helper-marker-size = 0.02m
+  helper-marker-opacity = 0.3
+
+  helper-marker-geo = new THREE.CubeGeometry helper-marker-size, helper-marker-size, helper-marker-size
+  red-helper-mat    = new THREE.MeshBasicMaterial color: 0xff00ff, transparent: yes, opacity: helper-marker-opacity
+  blue-helper-mat   = new THREE.MeshBasicMaterial color: 0x00ffff, transparent: yes, opacity: helper-marker-opacity
+
+
   (@opts) ->
 
     aspect = window.inner-width / window.inner-height
@@ -46,13 +54,17 @@ export class SceneManager
     @scene.add @root
     @root.add @registration
 
+    # Registration helpers
+    @root.add         new THREE.Mesh helper-marker-geo, red-helper-mat
+    @registration.add new THREE.Mesh helper-marker-geo, blue-helper-mat
+
   show-helpers: ->
     grid      = new THREE.GridHelper 10, 0.1
     axis      = new THREE.AxisHelper 1
     root-axis = new THREE.AxisHelper 0.5
     axis.position.z = @registration.position.z
     root-axis.position.z = @root.position.z
-    @registration.add grid, axis #, root-axis
+    @registration.add axis, root-axis
 
   enable-shadow-casting: ->
     @renderer.shadow-map-soft     = yes

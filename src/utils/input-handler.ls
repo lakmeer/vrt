@@ -24,6 +24,10 @@ KEY =
   FOUR   : 52
   FIVE   : 53
   SIX    : 54
+  SEVEN  : 55
+  EIGHT  : 56
+  NINE   : 57
+  ZERO   : 48
 
 ACTION_NAME =
   "#{KEY.RETURN}" : \confirm
@@ -40,6 +44,11 @@ ACTION_NAME =
   "#{KEY.THREE}"  : \debug-3
   "#{KEY.FOUR}"   : \debug-4
   "#{KEY.FIVE}"   : \debug-5
+  "#{KEY.SIX}"    : \debug-6
+  "#{KEY.SEVEN}"  : \debug-7
+  "#{KEY.EIGHT}"  : \debug-8
+  "#{KEY.NINE}"   : \debug-9
+  "#{KEY.ZERO}"   : \debug-0
 
 
 # Pure Helpers

@@ -36,8 +36,6 @@ export class Arena extends Base
 
     for name, part of @parts => part.add-to @registration
 
-    @registration.position.z = -1 * @opts.block-size/2
-
   jolt: ({ rows-to-remove, timers }:gs) ->
     p = max 0, (1 - timers.hard-drop-effect.progress)
     zz = rows-to-remove.length

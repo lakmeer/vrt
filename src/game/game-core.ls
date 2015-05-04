@@ -134,3 +134,6 @@ export reset-score = (score) ->
     triples: 0
     tetris: 0
 
+export animation-time-for-rows = (rows) ->
+  10 + 3 ** rows.length
+

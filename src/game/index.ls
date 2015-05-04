@@ -80,7 +80,7 @@ export class TetrisGame
           gs.rows-to-remove = for i from gs.arena.height - amt to gs.arena.height - 1 => i
           gs.metagame-state = \remove-lines
           gs.flags.rows-removed-this-frame = yes
-          gs.timers.removal-animation.reset 10 + 3 ** gs.rows-to-remove.length
+          gs.timers.removal-animation.reset Core.animation-time-for-rows gs.rows-to-remove
         | \debug-5 =>  # Sets up tetris scenario
           pos = gs.brick.current.pos
           gs.brick.current = Core.new-brick 6
@@ -88,6 +88,11 @@ export class TetrisGame
           for y from (arena.height - 1) to (arena.height - 4) by -1
             for x from 0 to arena.width - 2
               arena.cells[y][x] = 1
+        | \debug-6 =>
+          gs.rows-to-remove = [ 10, 12, 14 ]
+          gs.metagame-state = \remove-lines
+          gs.flags.rows-removed-this-frame = yes
+          gs.timers.removal-animation.reset Core.animation-time-for-rows gs.rows-to-remove
 
       else if action is \up
         switch key

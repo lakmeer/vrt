@@ -31,6 +31,9 @@ export class ThreeJsRenderer
       frames-since-rows-removed: 0
       last-seen-state: \no-game
 
+    # Jitter offset object - absorbs jitter movements so they don't disturb camera position
+    @scene.add @jitter = new THREE.Object3D
+
     # Build scene
     @parts =
       table       : new Table        @opts, gs
@@ -40,7 +43,7 @@ export class ThreeJsRenderer
       fail-screen : new FailScreen   @opts, gs
       next-brick  : new BrickPreview @opts, gs
 
-    for name, part of @parts => @scene.add part
+    for name, part of @parts => part.add-to @jitter
 
     # Arrangement of scene components
     @parts.next-brick.root.position.set -@opts.desk-size.1/2, 0, -@opts.preview-distance-from-edge
@@ -60,7 +63,7 @@ export class ThreeJsRenderer
     # We do this by moving the scene away instead of positioning the camera,
     # because if the VR mode kicks in, VRControls will set the camera position
     # based on the HMD's tracking data, relative to 0,0,0, not to your new pos.
-    @scene.root.position.set 0, -@opts.camera-elevation, -@opts.camera-distance-from-edge * 2
+    @scene.registration.position.set 0, -@opts.camera-elevation, -@opts.camera-distance-from-edge * 2
 
     # Helpers
     @scene.show-helpers!
@@ -87,7 +90,7 @@ export class ThreeJsRenderer
     @trackball.update!
     @scene.update!
 
-    #@scene.registration.position.z = -0.5 + -0.5 * sin gs.elapsed-time / 100
+    #@scene.registration.position.y = -0.5 + -0.5 * sin gs.elapsed-time / 1000
 
     # Show/hide different components when metagamestate changes
     if gs.metagame-state isnt @state.last-seen-state
@@ -114,12 +117,12 @@ export class ThreeJsRenderer
       rows = gs.rows-to-remove.length
       p = gs.timers.removal-animation.progress
       gs.slowdown = 1 + Ease.exp-in p, 10, 0
-      @parts.arena.zap-lines gs, @scene.registration.position
+      @parts.arena.zap-lines gs, @jitter.position
       @parts.next-brick.update-wiggle gs, gs.elapsed-time
 
     | \game =>
       gs.slowdown = 1
-      @parts.arena.update    gs, @scene.registration.position
+      @parts.arena.update    gs, @jitter.position
       @parts.next-brick.display-shape gs.brick.next
       @parts.next-brick.update-wiggle gs, gs.elapsed-time
 
