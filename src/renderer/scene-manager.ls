@@ -55,8 +55,8 @@ export class SceneManager
     @root.add @registration
 
     # Registration helpers
-    @root.add         new THREE.Mesh helper-marker-geo, red-helper-mat
-    @registration.add new THREE.Mesh helper-marker-geo, blue-helper-mat
+    #@root.add         new THREE.Mesh helper-marker-geo, red-helper-mat
+    #@registration.add new THREE.Mesh helper-marker-geo, blue-helper-mat
 
   show-helpers: ->
     grid      = new THREE.GridHelper 10, 0.1
@@ -64,7 +64,7 @@ export class SceneManager
     root-axis = new THREE.AxisHelper 0.5
     axis.position.z = @registration.position.z
     root-axis.position.z = @root.position.z
-    @registration.add axis, root-axis
+    #@registration.add axis, root-axis
 
   enable-shadow-casting: ->
     @renderer.shadow-map-soft     = yes

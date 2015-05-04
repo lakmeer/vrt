@@ -35,6 +35,10 @@ canvas-texture = do ->
     img-ctx.draw-image text-cnv, 0, 0, texture-size, texture-size
     return img-cnv.to-data-URL!
 
+digit-textures =
+  for i from 0 to 9
+     canvas-texture text: String(i), width: 50, height: 100, text-size: 100
+
 
 # Nixie Tube subcomponent
 
@@ -80,13 +84,13 @@ class NixieTube extends Base
   show-digit: (digit) ->
     @digits.map -> it.visible = it.digit is digit
 
+
   create-digit-quad: (digit, ix) ->
-    image = canvas-texture text: String(digit), width: 50, height: 100, text-size: 100
+    image = digit-textures[i]
     tex   = THREE.ImageUtils.load-texture image
     geom  = new THREE.PlaneBufferGeometry 0.025, 0.05
     mat   = new THREE.MeshPhongMaterial map: tex, alpha-map: tex, transparent: yes, emissive: 0xff9944
     quad  = new THREE.Mesh geom, mat
-
 
 
 # Nixie Display

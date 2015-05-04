@@ -64,7 +64,7 @@ export class ThreeJsRenderer
     # We do this by moving the scene away instead of positioning the camera,
     # because if the VR mode kicks in, VRControls will set the camera position
     # based on the HMD's tracking data, relative to 0,0,0, not to your new pos.
-    @scene.registration.position.set 0, -@opts.camera-elevation, -@opts.camera-distance-from-edge * 2
+    @scene.registration.position.set 0, -@opts.camera-elevation, 0 # -@opts.camera-distance-from-edge * 2
 
     # Helpers
     @scene.show-helpers!

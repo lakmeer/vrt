@@ -35,10 +35,10 @@ render-opts =
   arena-distance-from-edge: 0.5    # Distance from front of desk to front of arena
   preview-distance-from-edge: 0.2  # Position of next-brick-preview display
   preview-scale-factor: 0.5        # Show next-brick-preview at smaller scale
-  camera-distance-from-edge: 0.4   # Horizontal distance from player's eyes to front of desk
+  camera-distance-from-edge: 0.2   # Horizontal distance from player's eyes to front of desk
   camera-elevation: 0.5            # Vertical distance from desktop to player's eyes
   hard-drop-jolt-amount: 0.03      # Maximum excursion of 'jolt' effect when bricks land
-  zap-particle-size: 0.01          # Size in meters of zap particles
+  zap-particle-size: 0.005          # Size in meters of zap particles
   score-distance-from-edge: 0.15   # Nixie display distance from edge of table
 
 input-handler = new InputHandler
