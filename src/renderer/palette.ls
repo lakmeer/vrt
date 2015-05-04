@@ -3,7 +3,7 @@
 
 THREE = require \three-js-vr-extensions # puts THREE in global scope
 
-{ map } = require \std
+{ log, map } = require \std
 
 pluck = (p, o) --> o[p]
 
@@ -25,14 +25,14 @@ export tile-colors = map pluck(2), color-order
 export spec-colors = map pluck(0), color-order
 
 normal-maps = [
-  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \../assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
+  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
 ]
 
 normal-adjust = new THREE.Vector2 1, 1

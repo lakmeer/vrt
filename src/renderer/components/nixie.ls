@@ -37,8 +37,8 @@ canvas-texture = do ->
 
 digit-textures =
   for i from 0 to 9
-     canvas-texture text: String(i), width: 50, height: 100, text-size: 100
-
+     i = new Image
+     i.src = canvas-texture text: String(i), width: 50, height: 100, text-size: 100
 
 # Nixie Tube subcomponent
 

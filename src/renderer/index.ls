@@ -156,6 +156,6 @@ export class ThreeJsRenderer
     #@ball.position.x = 0 + 0.2 * cos gs.elapsed-time / 1000
 
     # Lighting test
-    #@parts.lighting.root.position.x = 0.5 * sin gs.elapsed-time / 100
-    #@parts.lighting.root.position.y = 0.5 * cos gs.elapsed-time / 100
+    @parts.lighting.root.position.x = 0.5 * sin gs.elapsed-time / 500
+    @parts.lighting.root.position.y = 0.5 * cos gs.elapsed-time / 500
 
