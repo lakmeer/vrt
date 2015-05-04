@@ -45,6 +45,8 @@ export lerp = (min, max, p) --> min + p * (max - min)
 
 export map = (λ, l) --> [ λ x for x in l ]
 
+export split = (char, str) --> str.split char
+
 export join = (char, str) --> str.join char
 
 export unlines = join "\n"

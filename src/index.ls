@@ -39,6 +39,7 @@ render-opts =
   camera-elevation: 0.5            # Vertical distance from desktop to player's eyes
   hard-drop-jolt-amount: 0.03      # Maximum excursion of 'jolt' effect when bricks land
   zap-particle-size: 0.01          # Size in meters of zap particles
+  score-distance-from-edge: 0.15   # Nixie display distance from edge of table
 
 input-handler = new InputHandler
 game-state    = new GameState game-opts

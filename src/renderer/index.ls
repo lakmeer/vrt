@@ -10,7 +10,7 @@ THREE = require \three-js-vr-extensions # puts THREE in global scope
 { SceneManager }               = require \./scene-manager
 { DebugCameraPositioner }      = require \./debug-camera
 
-{ Arena, Table, StartMenu, FailScreen, Lighting, BrickPreview } = require \./components
+{ Arena, Table, StartMenu, FailScreen, Lighting, BrickPreview, NixieDisplay } = require \./components
 
 { TrackballControls } = require \../../lib/trackball-controls.js
 
@@ -42,6 +42,7 @@ export class ThreeJsRenderer
       start-menu  : new StartMenu    @opts, gs
       fail-screen : new FailScreen   @opts, gs
       next-brick  : new BrickPreview @opts, gs
+      score       : new NixieDisplay @opts, gs
 
     for name, part of @parts => part.add-to @jitter
 
@@ -119,12 +120,14 @@ export class ThreeJsRenderer
       gs.slowdown = 1 + Ease.exp-in p, 10, 0
       @parts.arena.zap-lines gs, @jitter.position
       @parts.next-brick.update-wiggle gs, gs.elapsed-time
+      @parts.score.run-to-number gs.timers.removal-animation.progress, gs.score.points
 
     | \game =>
       gs.slowdown = 1
       @parts.arena.update    gs, @jitter.position
       @parts.next-brick.display-shape gs.brick.next
       @parts.next-brick.update-wiggle gs, gs.elapsed-time
+      @parts.score.show-number gs.score.points
 
     | \start-menu =>
       @parts.start-menu.update gs

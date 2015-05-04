@@ -26,6 +26,7 @@ export class BrickPreview extends Brick
     super ...
     s = @opts.preview-scale-factor
     @root.scale.set s, s, s
+
   display-shape: (brick) ->
     super ...
     grid = @opts.grid-size
