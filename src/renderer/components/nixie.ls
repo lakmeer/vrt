@@ -5,6 +5,8 @@
 
 { Base } = require \./base
 
+require \../geometry/capsule
+
 
 # Temporary Dynamic Text Texturing
 
@@ -37,8 +39,7 @@ canvas-texture = do ->
 
 digit-textures =
   for i from 0 to 9
-     i = new Image
-     i.src = canvas-texture text: String(i), width: 50, height: 100, text-size: 100
+     canvas-texture text: String(i), width: 50, height: 100, text-size: 100
 
 # Nixie Tube subcomponent
 
@@ -52,24 +53,24 @@ class NixieTube extends Base
 
     super ...
 
-    @sphere = new THREE.Mesh (new THREE.SphereGeometry tube-radius, 32, 32, 0, pi), new THREE.MeshPhongMaterial do
+    glass-mat = new THREE.MeshPhongMaterial do
       color: 0x222222
       transparent: true
       specular: 0xffffff
       shininess: 100
-      opacity: 0.1
-      #blending: THREE.AdditiveBlending
-      side: THREE.DoubleSided
+      blending: THREE.AdditiveBlending
       depth-write: no
 
     base-geo = new THREE.CylinderGeometry tube-radius * 1.1, tube-radius * 1.1, base-height, 32, 0
-    base-mat = new THREE.MeshPhongMaterial color: \grey, specular: \white, shininess: 30
+    base-mat = new THREE.MeshPhongMaterial color: 0x444444, specular: 0x999999, shininess: 0
 
-    @base = new THREE.Mesh base-geo, base-mat
+    @glass = new THREE.Mesh (new THREE.CapsuleGeometry tube-radius, 16, tube-height, 0), glass-mat
+    @base  = new THREE.Mesh base-geo, base-mat
+
+    @glass.position.y = tube-height
+
+    @registration.add @glass
     @registration.add @base
-
-    @sphere.render-order = 0
-    @registration.add @sphere
 
     @digits =
       for i, ix in [ 0 to 9 ]
@@ -84,9 +85,8 @@ class NixieTube extends Base
   show-digit: (digit) ->
     @digits.map -> it.visible = it.digit is digit
 
-
   create-digit-quad: (digit, ix) ->
-    image = digit-textures[i]
+    image = digit-textures[digit]
     tex   = THREE.ImageUtils.load-texture image
     geom  = new THREE.PlaneBufferGeometry 0.025, 0.05
     mat   = new THREE.MeshPhongMaterial map: tex, alpha-map: tex, transparent: yes, emissive: 0xff9944

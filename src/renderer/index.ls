@@ -64,16 +64,16 @@ export class ThreeJsRenderer
     # We do this by moving the scene away instead of positioning the camera,
     # because if the VR mode kicks in, VRControls will set the camera position
     # based on the HMD's tracking data, relative to 0,0,0, not to your new pos.
-    @scene.registration.position.set 0, -@opts.camera-elevation, 0 # -@opts.camera-distance-from-edge * 2
+    @scene.registration.position.set 0, -@opts.camera-elevation, -@opts.camera-distance-from-edge
 
     # Helpers
     @scene.show-helpers!
 
     # Test
     return
-    geo = new THREE.SphereGeometry 0.1, 24, 24
+    geo = new THREE.CapsuleGeometry 0.1, 16, 0.2, 0
     mat = new THREE.MeshPhongMaterial do
-      side: THREE.DoubleSide
+      #side: THREE.DoubleSide
       color: 0x222222
       specular: 0xffffff
       shininess: 100
@@ -81,6 +81,7 @@ export class ThreeJsRenderer
       blending: THREE.AdditiveBlending
 
     @scene.add @ball = new THREE.Mesh geo, mat
+
     @ball.position.y = 0.5
     @ball.position.z = -0.5
 
@@ -156,6 +157,6 @@ export class ThreeJsRenderer
     #@ball.position.x = 0 + 0.2 * cos gs.elapsed-time / 1000
 
     # Lighting test
-    @parts.lighting.root.position.x = 0.5 * sin gs.elapsed-time / 500
-    @parts.lighting.root.position.y = 0.5 * cos gs.elapsed-time / 500
+    #@parts.lighting.root.position.x = 0.5 * sin gs.elapsed-time / 500
+    #@parts.lighting.root.position.y = 0.5 * cos gs.elapsed-time / 500
 

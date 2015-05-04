@@ -37,7 +37,7 @@ export class SceneManager
     @renderer = new THREE.WebGLRenderer antialias: true
     @scene    = new THREE.Scene!
     @camera   = new THREE.PerspectiveCamera 75, aspect, 0.001, 1000
-    @controls = new THREE.VRControls @camera
+    @controls = new THREE.VRControls @camera, @detectVR
 
     @root         = new THREE.Object3D
     @registration = new THREE.Object3D
@@ -51,12 +51,20 @@ export class SceneManager
     window.addEventListener \resize, @resize, false
     document.body.addEventListener \dblclick, @go-fullscreen
 
+    # State
+    @state = vr-mode: yes
+
+    # Heirarchy
     @scene.add @root
     @root.add @registration
 
     # Registration helpers
     #@root.add         new THREE.Mesh helper-marker-geo, red-helper-mat
     #@registration.add new THREE.Mesh helper-marker-geo, blue-helper-mat
+
+  detectVR: ~>
+    log this
+    @state.vr-mode = false
 
   show-helpers: ->
     grid      = new THREE.GridHelper 10, 0.1
