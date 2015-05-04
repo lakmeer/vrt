@@ -77,7 +77,11 @@ export class Arena extends Base
 
     # Update falling brick
     @parts.this-brick.display-shape brick.current
-    @parts.this-brick.update-pos brick.current.pos
+
+    grid = @opts.grid-size
+    height = grid * gs.arena.height
+
+    @parts.this-brick.root.position.set grid * brick.current.pos.0, height - grid * brick.current.pos.1, 0
 
     # Show lines
     @parts.guide-lines.show-beam brick.current

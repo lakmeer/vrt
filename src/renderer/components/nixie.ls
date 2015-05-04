@@ -119,7 +119,10 @@ export class NixieDisplay extends Base
   run-to-number: (p, num) ->
     next-number = floor lerp @state.last-seen-number, num, p
     @show-number next-number
-    if p is 1 then @state.last-seen-number = next-number
+
+  set-number: (num) ->
+    @state.last-seen-number = num
+    @show-number num
 
   show-number: (num = 0) ->
     # Split incoming numbers

@@ -10,7 +10,7 @@
 export class ParticleBurst extends Base
 
   speed    = 2
-  lifespan = 4000 # actually 2000
+  lifespan = 1500 # actually 2000
 
   (@opts, {{ width, height }:arena }:gs) ->
 
@@ -18,7 +18,7 @@ export class ParticleBurst extends Base
 
     @size   = @opts.zap-particle-size
 
-    particles  = 800
+    particles  = 1500  # Per row annihilated
     geometry   = new THREE.BufferGeometry!
     color      = new THREE.Color!
 
@@ -43,6 +43,7 @@ export class ParticleBurst extends Base
     material = new THREE.PointCloudMaterial do
       size: @size
       transparent: true
+      blending: THREE.AdditiveBlending
       vertex-colors: THREE.VertexColors
 
     @root.add new THREE.PointCloud geometry, material
@@ -61,7 +62,7 @@ export class ParticleBurst extends Base
       @positions[ i + 1 ] = 0
       @positions[ i + 2 ] = z * grid
       @velocities[ i + 0 ] = x / 10
-      @velocities[ i + 1 ] = rand grid, 10 * grid
+      @velocities[ i + 1 ] = rand -2 * grid, 10 * grid
       @velocities[ i + 2 ] = z
       @colors[ i + 0 ] = 1
       @colors[ i + 1 ] = 1
@@ -110,10 +111,11 @@ export class ParticleBurst extends Base
     @velocities[i + 2] = vz1
 
     l = @lifespans[i/3]/@maxlifes[i/3]
+    l = l*l*l
 
     @colors[ i + 0 ] = l
-    @colors[ i + 1 ] = l*l
-    @colors[ i + 2 ] = l*l*l*l
+    @colors[ i + 1 ] = l
+    @colors[ i + 2 ] = l
 
     @alphas[i/3] = l
 
@@ -123,7 +125,7 @@ export class ParticleBurst extends Base
     for i from 0 til @positions.length by 3
       @lifespans[i/3] = lifespan/2 + Math.random! * lifespan/2
       @maxlifes[i/3] = @lifespans[i/3]
-      @positions[i + 1] = (y + Math.random! - 0.5) * grid
+      @positions[i + 1] = (y + Math.random!) * grid
 
   update: (p, Δt) ->
     bounce-bounds-x = @opts.desk-size.0 / 2

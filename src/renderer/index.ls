@@ -128,7 +128,7 @@ export class ThreeJsRenderer
       @parts.arena.update    gs, @jitter.position
       @parts.next-brick.display-shape gs.brick.next
       @parts.next-brick.update-wiggle gs, gs.elapsed-time
-      @parts.score.show-number gs.score.points
+      @parts.score.set-number gs.score.points
 
     | \start-menu =>
       @parts.start-menu.update gs

@@ -36,7 +36,7 @@ export class Brick extends Base
     @geom.brick-box = new THREE.BoxGeometry size, size, size
 
     @registration.rotation.x = pi
-    @registration.position.set width/-2 + 0.5 * grid, height - 0.5 * grid, 0
+    @registration.position.set width/-2 + 0.5 * grid, -0.5 * grid, 0
 
     @brick = new THREE.Object3D
     @registration.add @brick
@@ -58,8 +58,4 @@ export class Brick extends Base
           ..material = mesh-materials[cell]
           ..position.set x * grid + margin, y * grid + margin, 0
         ix += 1
-
-  update-pos: ([ x, y ]) ->
-    grid = @opts.grid-size
-    @brick.position.set grid * x, grid * y, 0
 

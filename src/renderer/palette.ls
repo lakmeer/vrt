@@ -7,6 +7,7 @@ THREE = require \three-js-vr-extensions # puts THREE in global scope
 
 pluck = (p, o) --> o[p]
 
+
 # Techinicolor colors
 
 export neutral = [ 0xffffff 0xcccccc 0x888888 0x212121 ]
@@ -21,21 +22,17 @@ export cyan    = [ 0x44ddff 0xaae3ff 0x00aacc 0x006699 ]
 
 color-order = [ neutral, red, orange, yellow, green, cyan, blue, magenta ]
 
+
+# Export color sequences
+
 export tile-colors = map pluck(2), color-order
 export spec-colors = map pluck(0), color-order
 
-normal-maps = [
-  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
-  THREE.ImageUtils.load-texture \/assets/tile.nrm.png
-]
 
-normal-adjust = new THREE.Vector2 1, 1
+# Generate tile mats
+
+tile-normal-map = THREE.ImageUtils.load-texture \/assets/tile.nrm.png
+tile-normal-adjust = new THREE.Vector2 1, 1
 
 export mesh-materials = for color, i in tile-colors
   new THREE.MeshPhongMaterial do
@@ -43,8 +40,22 @@ export mesh-materials = for color, i in tile-colors
     color: color
     specular: spec-colors[i]
     shininess: 100
-    normal-map: normal-maps[i]
-    normal-scale: normal-adjust
+    normal-map: tile-normal-map
+    normal-scale: tile-normal-adjust
+
+export transparent-tile-materials = for color, i in tile-colors
+  new THREE.MeshPhongMaterial do
+    metal: true
+    color: color
+    transparent: true
+    opacity: 0.5
+    specular: spec-colors[i]
+    shininess: 100
+    normal-map: tile-normal-map
+    normal-scale: tile-normal-adjust
+
+
+# Generate line mats
 
 export line-materials = for color in tile-colors
   new THREE.LineBasicMaterial do

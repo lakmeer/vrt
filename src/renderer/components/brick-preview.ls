@@ -11,7 +11,7 @@
 # Class
 #
 
-export class BrickPreview extends Brick
+export class BrickPreview extends Base
 
   pretty-offset =
     square : [0 0]
@@ -22,15 +22,22 @@ export class BrickPreview extends Brick
     tee    : [0.5 0]
     tetris : [0 0.5]
 
-  (@opts, gs) ->
+  ({ preview-scale-factor }:opts, gs) ->
     super ...
-    s = @opts.preview-scale-factor
-    @root.scale.set s, s, s
+
+    s = preview-scale-factor
+
+    @brick = new Brick @opts, gs
+    @brick.root.scale.set s, s, s
+
+    @registration.add @brick.root
 
   display-shape: (brick) ->
-    super ...
+    @brick.display-shape brick
+
     grid = @opts.grid-size
     [ x, y ] = pretty-offset[ brick.type ]
+
     @registration.position.x = (-1.5 + x) * grid
     @registration.position.y = (-1.5 + y + 5) * grid
 
