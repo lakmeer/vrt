@@ -3,14 +3,8 @@
 
 { id, log } = require \std
 
-THREE = require \three-js-vr-extensions # puts THREE in global scope
-
-#
-# Axis Helper
-#
-# Is just like THREE.Axis
-#
-
+THREE     = require \three-js-vr-extensions # puts THREE in global scope
+Materials = require \./mats
 
 
 #
@@ -23,11 +17,7 @@ export class SceneManager
 
   helper-marker-size = 0.02m
   helper-marker-opacity = 0.3
-
   helper-marker-geo = new THREE.CubeGeometry helper-marker-size, helper-marker-size, helper-marker-size
-  red-helper-mat    = new THREE.MeshBasicMaterial color: 0xff00ff, transparent: yes, opacity: helper-marker-opacity
-  blue-helper-mat   = new THREE.MeshBasicMaterial color: 0x00ffff, transparent: yes, opacity: helper-marker-opacity
-
 
   (@opts) ->
 
@@ -37,7 +27,7 @@ export class SceneManager
     @renderer = new THREE.WebGLRenderer antialias: true
     @scene    = new THREE.Scene!
     @camera   = new THREE.PerspectiveCamera 75, aspect, 0.001, 1000
-    @controls = new THREE.VRControls @camera, @detectVR
+    @controls = new THREE.VRControls @camera
 
     @root         = new THREE.Object3D
     @registration = new THREE.Object3D
@@ -52,19 +42,16 @@ export class SceneManager
     document.body.addEventListener \dblclick, @go-fullscreen
 
     # State
-    @state = vr-mode: yes
+    @state = vr-mode: navigator.getVRDevices?
 
     # Heirarchy
     @scene.add @root
     @root.add @registration
 
-    # Registration helpers
-    #@root.add         new THREE.Mesh helper-marker-geo, red-helper-mat
-    #@registration.add new THREE.Mesh helper-marker-geo, blue-helper-mat
 
-  detectVR: ~>
-    log this
-    @state.vr-mode = false
+  add-registration-helper: ->
+    @root.add         new THREE.Mesh helper-marker-geo, Materials.helper-a
+    @registration.add new THREE.Mesh helper-marker-geo, Materials.helper-b
 
   show-helpers: ->
     grid      = new THREE.GridHelper 10, 0.1

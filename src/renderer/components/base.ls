@@ -3,6 +3,8 @@
 
 { id, log } = require \std
 
+Materials = require \../mats
+
 
 #
 # Class
@@ -10,35 +12,30 @@
 
 export class Base
 
-  helper-marker-size = 0.02m
-  helper-marker-opacity = 0.5
-
-  helper-marker-geo = new THREE.CubeGeometry helper-marker-size, helper-marker-size, helper-marker-size
-  red-helper-mat    = new THREE.MeshBasicMaterial color: 0xff0000, transparent: yes, opacity: helper-marker-opacity
-  blue-helper-mat   = new THREE.MeshBasicMaterial color: 0x00ff00, transparent: yes, opacity: helper-marker-opacity
-
+  helper-marker-geo = new THREE.CubeGeometry 0.02, 0.02, 0.02
 
   (@opts, gs) ->
-
-    # Base can configure it's own offset relative to it's canonical position
     @root = new THREE.Object3D
     @registration = new THREE.Object3D
     @root.add @registration
 
   add-registration-helper: ->
-    @root.add         new THREE.Mesh helper-marker-geo, red-helper-mat
-    @registration.add new THREE.Mesh helper-marker-geo, blue-helper-mat
+    @root.add         new THREE.Mesh helper-marker-geo, Materials.helper-a
+    @registration.add new THREE.Mesh helper-marker-geo, Materials.helper-b
 
-    start = new THREE.Vector3 0, 0, 0
-    end   = @registration.position
-    dir   = new THREE.Vector3!sub-vectors(end, start).normalize!
-    arrow = new THREE.ArrowHelper dir, start, start.distance-to end, 0x0000ff
-    @root.add arrow
+    # Registration offset arrow
+    start    = new THREE.Vector3 0, 0, 0
+    end      = @registration.position
+    distance = start.distance-to end
 
-    @registration.add-event-listener \changed, ->
-      console.debug \CHANGE, this, &
+    # Don't add arrow if length would be zero (apart from being useless, causes matrix determinant to be zero which generates warnings)
+    if distance > 0
+      dir   = new THREE.Vector3!sub-vectors(end, start).normalize!
+      arrow = new THREE.ArrowHelper dir, start, distance, 0x0000ff
+      @root.add arrow
 
-    log 'Registration helper for:', this
+    # Helps track down which components still have registration helpers
+    log 'Registration helper at', this
 
   add-box-helper: (thing) ->
     bbox = new THREE.BoundingBoxHelper thing, 0x5555ff

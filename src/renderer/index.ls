@@ -50,13 +50,8 @@ export class ThreeJsRenderer
     @parts.next-brick.root.position.set -@opts.preview-distance-from-center, 0, -@opts.preview-distance-from-edge
     @parts.arena.root.position.set 0, 0, -@opts.arena-distance-from-edge
 
-    # Trackball
-    trackball-target = new THREE.Object3D
-    trackball-target.position.z = -@opts.camera-distance-from-edge
-    @scene.add trackball-target
-    @trackball = new THREE.TrackballControls @scene.camera, trackball-target
-
-    # Reset VR Controls
+    # Controls
+    @add-trackball!
     @scene.controls.reset-sensor!
 
     # Position camera based on user's setting
@@ -69,6 +64,13 @@ export class ThreeJsRenderer
     # Helpers
     @scene.show-helpers!
 
+
+  add-trackball: ->
+    trackball-target = new THREE.Object3D
+    trackball-target.position.z = -@opts.camera-distance-from-edge
+    @scene.add trackball-target
+    @trackball = new THREE.TrackballControls @scene.camera, trackball-target
+    @trackball.pan-speed = 1
 
   append-to: (host) ->
     host.append-child @scene.dom-element

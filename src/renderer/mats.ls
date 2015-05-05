@@ -40,6 +40,27 @@ textures =
 # Materials Library
 #
 
+
+# Generic Materials
+
+export glass =
+  new THREE.MeshPhongMaterial do
+    color: 0x222222
+    transparent: true
+    specular: 0xffffff
+    shininess: 100
+    blending: THREE.AdditiveBlending
+    depth-write: no
+
+export copper =
+  new THREE.MeshPhongMaterial do
+    color: 0x965111
+    specular: 0xcb6d51
+    shininess: 30
+
+
+# Nixie Tubes
+
 export nixie-digits =
   for i from 0 to 9
     new THREE.MeshPhongMaterial do
@@ -56,20 +77,8 @@ export nixie-bg =
     specular: 0xffffff
     shininess: 80
 
-export glass =
-  new THREE.MeshPhongMaterial do
-    color: 0x222222
-    transparent: true
-    specular: 0xffffff
-    shininess: 100
-    blending: THREE.AdditiveBlending
-    depth-write: no
 
-export copper =
-  new THREE.MeshPhongMaterial do
-    color: 0x965111
-    specular: 0xcb6d51
-    shininess: 30
+# Blocks
 
 export blocks =
   for color, i in Palette.tile-colors
@@ -97,6 +106,9 @@ export zap =
     color: 0xffffff
     emissive: 0xffffff
 
+
+# Table Faces
+
 export table-top =
   new THREE.MeshPhongMaterial do
     map: textures.table-top-color
@@ -118,13 +130,31 @@ export table-faces =
     table-edge
   ]
 
+
+# Lines
+
 export lines =
   for color in Palette.tile-colors
     new THREE.LineBasicMaterial do
       color: color
 
+
+# Debug Materials
+
 export debug-wireframe =
   new THREE.MeshBasicMaterial do
     color: \white
     wireframe: true
+
+export helper-a =
+  new THREE.MeshBasicMaterial do
+    color: 0xff0000
+    transparent: yes
+    opacity: 0.5
+
+export helper-b =
+  new THREE.MeshBasicMaterial do
+    color: 0x00ff00
+    transparent: yes
+    opacity: 0.5
 
