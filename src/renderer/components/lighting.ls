@@ -1,7 +1,7 @@
 
 # Require
 
-{ id, log, pi } = require \std
+{ id, log, pi, sin, cos } = require \std
 
 { Base } = require \./base
 
@@ -19,15 +19,15 @@ export class Lighting extends Base
 
     @light = new THREE.PointLight 0xffffff, 1, main-light-distance
     @light.position.set 0, 1, 0
-    @root.add @light
+    @registration.add @light
 
     @spotlight = new THREE.SpotLight 0xffffff, 1, 50, 1
     @spotlight.position.set 0, 3, -1
     @spotlight.target.position.set 0, 0, -1
-    @root.add @spotlight
+    @registration.add @spotlight
 
     @ambient = new THREE.AmbientLight 0x666666
-    @root.add @ambient
+    @registration.add @ambient
 
     # Shadows
     @spotlight.cast-shadow = yes
@@ -43,6 +43,10 @@ export class Lighting extends Base
     @spotlight.shadow-camera-fov = 50
 
   show-helpers: ->
-    @root.add new THREE.PointLightHelper @light, main-light-distance
-    @root.add new THREE.SpotLightHelper @spotlight
+    @registration.add new THREE.PointLightHelper @light, main-light-distance
+    @registration.add new THREE.SpotLightHelper @spotlight
+
+  test: (time) ->
+    @registration.position.x = 1.0 * sin time / 500
+    @registration.position.y = 0.5 * cos time / 500
 

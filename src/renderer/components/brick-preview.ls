@@ -43,7 +43,11 @@ export class BrickPreview extends Base
     @registration.add @dome
     @registration.add @brick.root
 
+  display-nothing: ->
+    @brick.visible = no
+
   display-shape: (brick) ->
+    @brick.visible = yes
     @brick.pretty-display-shape brick
 
   update-wiggle: (brick, elapsed-time) ->

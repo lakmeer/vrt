@@ -69,21 +69,6 @@ export class ThreeJsRenderer
     # Helpers
     @scene.show-helpers!
 
-    # Test
-    return
-    geo = new THREE.CapsuleGeometry 0.1, 16, 0.2, 0
-    mat = new THREE.MeshPhongMaterial do
-      #side: THREE.DoubleSide
-      color: 0x222222
-      specular: 0xffffff
-      shininess: 100
-      transparent: true
-      blending: THREE.AdditiveBlending
-
-    @scene.add @ball = new THREE.Mesh geo, mat
-
-    @ball.position.y = 0.5
-    @ball.position.z = -0.5
 
   append-to: (host) ->
     host.append-child @scene.dom-element
@@ -133,12 +118,15 @@ export class ThreeJsRenderer
       @parts.score.pulse gs.elapsed-time / 1000
 
     | \start-menu =>
+      @parts.next-brick.display-nothing!
       @parts.start-menu.update gs
 
     | \pause-menu =>
+      @parts.next-brick.display-nothing!
       @parts.pause-menu.update gs
 
     | \failure =>
+      @parts.next-brick.display-nothing!
       @parts.fail-screen.update gs
 
     | otherwise =>
@@ -153,12 +141,6 @@ export class ThreeJsRenderer
     # Finally, render the scene
     @scene.render!
 
-    # Testing
-    #@ball.rotation.y = gs.elapsed-time / 1000
-    #@ball.position.y = 0.5 + 0.2 * sin gs.elapsed-time / 1000
-    #@ball.position.x = 0 + 0.2 * cos gs.elapsed-time / 1000
-
     # Lighting test
-    #@parts.lighting.root.position.x = 1 * sin gs.elapsed-time / 500
-    #@parts.lighting.root.position.y = 0.5 * cos gs.elapsed-time / 500
+    #@parts.lighting.test gs.elapsed-time
 

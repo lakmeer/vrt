@@ -22,7 +22,6 @@
 # Setup
 #
 
-
 p2m = (* 1.6/2048)
 
 game-opts =
