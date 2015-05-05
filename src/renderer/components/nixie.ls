@@ -1,0 +1,150 @@
+
+# Require
+
+{ id, sin, lerp, log, floor, map, split, pi, tau } = require \std
+
+{ Base } = require \./base
+
+require \../geometry/capsule
+
+
+# Nixie Tube subcomponent
+
+class NixieTube extends Base
+
+  digit-mats = for i from 0 to 9
+    new THREE.MeshPhongMaterial do
+      map: THREE.ImageUtils.load-texture "/assets/digit-#i.col.png"
+      transparent: true
+      color: 0xff3300
+      emissive: 0xffbb00
+
+  bg-mat = new THREE.MeshPhongMaterial do
+    map: THREE.ImageUtils.load-texture \assets/digit-bg.col.png
+    color: 0x000000
+    transparent: true
+    specular: 0xffffff
+    shininess: 80
+
+  glass-mat = new THREE.MeshPhongMaterial do
+    color: 0x222222
+    transparent: true
+    specular: 0xffffff
+    shininess: 100
+    blending: THREE.AdditiveBlending
+    depth-write: no
+
+  base-mat = new THREE.MeshPhongMaterial do
+    color: 0x965111
+    specular: 0xcb6d51
+    shininess: 30
+
+
+  (@opts, gs) ->
+
+    super ...
+
+    # Copy options
+    tube-radius = @opts.score-tube-radius
+    tube-height = @opts.score-tube-height
+    base-radius = @opts.score-base-radius
+    base-height = @opts.score-tube-height / 10
+
+    # Create geometry
+    bg-geo   = new THREE.PlaneGeometry tube-radius * 1.5, tube-radius * 3
+    base-geo = new THREE.CylinderGeometry base-radius, base-radius, base-height, 6, 0
+    base-geo.apply-matrix new THREE.Matrix4!make-rotation-y pi/6
+
+    # State
+    @intensity = 0
+
+    # Create components
+    @glass = new THREE.Mesh (new THREE.CapsuleGeometry tube-radius, 16, tube-height, 0), glass-mat
+    @base  = new THREE.Mesh base-geo, base-mat
+    @bg    = new THREE.Mesh bg-geo, bg-mat
+
+    @glass.position.y = tube-height
+    @bg.position.y = tube-height/2
+    @digits =
+      for i, ix in [ 0 to 9 ]
+        quad = @create-digit-quad i, ix
+        quad.position.y = tube-height/2
+        quad.visible = no
+        quad.digit = i
+        quad.render-order = 0
+        @registration.add quad
+        quad
+
+    # Lighting
+    @light = new THREE.PointLight \orange, 0.3, 0.3
+    @light.position.y = @opts.score-tube-height / 2
+
+    @registration.add @glass
+    @registration.add @base
+    @registration.add @bg
+    @registration.add @light
+
+
+  pulse: (t) ->
+    if @intensity is 0
+      @light.intensity = 0
+    else
+      @light.intensity = @intensity + 0.1 * sin t
+
+  show-digit: (digit) ->
+    @intensity = if digit? then 0.5 else 0
+    @digits.map -> it.visible = it.digit is digit
+
+  create-digit-quad: (digit, ix) ->
+    geom  = new THREE.PlaneBufferGeometry @opts.score-tube-radius * 1.5, @opts.score-tube-radius * 3
+    quad  = new THREE.Mesh geom, digit-mats[digit]
+
+
+# Nixie Display
+#
+# Consists of multiple nixie tubes
+
+export class NixieDisplay extends Base
+
+  (@opts, gs) ->
+
+    super ...
+
+    offset      = @opts.score-offset-from-centre + @opts.score-base-radius
+    base-radius = @opts.score-base-radius
+
+    @count = 5
+
+    @state =
+      last-seen-number: 0
+
+    @tubes =
+      for i from 0 til @count
+        tube = new NixieTube @opts, gs
+        tube.position.x = offset + i * @opts.score-base-radius * 2
+        @registration.add tube.root
+        tube
+
+    @registration.position.z = -@opts.score-distance-from-edge
+
+  pulse: (t) ->
+    @tubes.map (.pulse t)
+
+  run-to-number: (p, num) ->
+    next-number = floor lerp @state.last-seen-number, num, p
+    @show-number next-number
+
+  set-number: (num) ->
+    @state.last-seen-number = num
+    @show-number num
+
+  show-number: (num = 0) ->
+    # Split incoming numbers
+    digits = num |> (.to-string!) |> split '' |> map parse-int _, 10
+
+    # Assign backward till we run out, then show zeroes
+    for i from @count - 1 to 0 by -1
+      tube = @tubes[i]
+      digit = digits.pop!
+      tube.show-digit digit
+
