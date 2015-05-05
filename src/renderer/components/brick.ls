@@ -5,7 +5,7 @@
 
 { Base } = require \./base
 
-{ mesh-materials } = require \../palette
+Materials = require \../mats
 
 
 #
@@ -30,13 +30,13 @@ export class Brick extends Base
     grid = @opts.grid-size
 
     @brick = new THREE.Object3D
-    @frame = new THREE.Mesh (new THREE.BoxGeometry 4 * grid, 4 * grid, grid), new THREE.MeshBasicMaterial color: \white, wireframe: true
+    @frame = new THREE.Mesh (new THREE.BoxGeometry 4 * grid, 4 * grid, grid), Materials.debug-wireframe
 
-    @geom.brick-box = new THREE.BoxGeometry size, size, size
+    block-geo = new THREE.BoxGeometry size, size, size
 
     @cells =
       for i from 0 to 3
-        cube = new THREE.Mesh @geom.brick-box, new THREE.MeshNormalMaterial
+        cube = new THREE.Mesh block-geo, Materials.normal
         @brick.add cube
         cube
 
@@ -60,5 +60,5 @@ export class Brick extends Base
         @cells[ix++]
           ..position.x = (offset.0 + 0.5 + x) * grid + margin
           ..position.y = (offset.1 + 0.5 + y) * grid + margin
-          ..material = mesh-materials[cell]
+          ..material = Materials.blocks[cell]
 

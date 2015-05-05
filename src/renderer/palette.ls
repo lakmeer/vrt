@@ -3,9 +3,7 @@
 
 THREE = require \three-js-vr-extensions # puts THREE in global scope
 
-{ log, map } = require \std
-
-pluck = (p, o) --> o[p]
+{ log, map, pluck } = require \std
 
 
 # Techinicolor colors
@@ -29,45 +27,11 @@ export tile-colors = map pluck(2), color-order
 export spec-colors = map pluck(0), color-order
 
 
-# Generate tile mats
-
-tile-normal-map = THREE.ImageUtils.load-texture \/assets/tile.nrm.png
-tile-normal-adjust = new THREE.Vector2 1, 1
-
-export mesh-materials = for color, i in tile-colors
-  new THREE.MeshPhongMaterial do
-    metal: true
-    color: color
-    specular: spec-colors[i]
-    shininess: 100
-    normal-map: tile-normal-map
-    normal-scale: tile-normal-adjust
-
-export transparent-tile-materials = for color, i in tile-colors
-  new THREE.MeshPhongMaterial do
-    metal: true
-    color: color
-    transparent: true
-    emissive: 0xffffff
-    opacity: 0.5
-    specular: spec-colors[i]
-    shininess: 100
-    normal-map: tile-normal-map
-    normal-scale: tile-normal-adjust
-
-
-# Generate line mats
-
-export line-materials = for color in tile-colors
-  new THREE.LineBasicMaterial do
-    color: color
-
-
 # Unified Namespace
 
 export Palette =
   {
     neutral, red, orange, yellow, green, cyan, blue, magenta,
-    tile-colors, mesh-materials, line-materials
+    tile-colors, spec-colors
   }
 

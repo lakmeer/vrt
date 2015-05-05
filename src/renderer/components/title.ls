@@ -6,7 +6,7 @@
 { Ease } = require \std
 { Base } = require \./base
 
-{ mesh-materials } = require \../palette
+Materials = require \../mats
 
 
 #
@@ -52,12 +52,12 @@ export class Title extends Base
     @word.position.z = grid-size/2
 
     # Create blocks to spell words
-    @geom.box = new THREE.BoxGeometry block-size * 0.9, block-size * 0.9, block-size * 0.9
+    block-geo = new THREE.BoxGeometry block-size, block-size, block-size
 
     for row, y in text
       for cell, x in row
         if cell
-          box = new THREE.Mesh @geom.box, mesh-materials[cell]
+          box = new THREE.Mesh block-geo, Materials.blocks[cell]
           box.position.set grid-size * x + margin, grid-size * (text.length/2 - y) + margin, grid-size/-2
           @word.add box
 

@@ -4,40 +4,14 @@
 { id, sin, lerp, log, floor, map, split, pi, tau } = require \std
 
 { Base } = require \./base
+{ CapsuleGeometry } = require \../geometry/capsule
+Materials = require \../mats
 
-require \../geometry/capsule
 
 
 # Nixie Tube subcomponent
 
 class NixieTube extends Base
-
-  digit-mats = for i from 0 to 9
-    new THREE.MeshPhongMaterial do
-      map: THREE.ImageUtils.load-texture "/assets/digit-#i.col.png"
-      transparent: true
-      color: 0xff3300
-      emissive: 0xffbb00
-
-  bg-mat = new THREE.MeshPhongMaterial do
-    map: THREE.ImageUtils.load-texture \assets/digit-bg.col.png
-    color: 0x000000
-    transparent: true
-    specular: 0xffffff
-    shininess: 80
-
-  glass-mat = new THREE.MeshPhongMaterial do
-    color: 0x222222
-    transparent: true
-    specular: 0xffffff
-    shininess: 100
-    blending: THREE.AdditiveBlending
-    depth-write: no
-
-  base-mat = new THREE.MeshPhongMaterial do
-    color: 0x965111
-    specular: 0xcb6d51
-    shininess: 30
 
 
   (@opts, gs) ->
@@ -59,9 +33,9 @@ class NixieTube extends Base
     @intensity = 0
 
     # Create components
-    @glass = new THREE.Mesh (new THREE.CapsuleGeometry tube-radius, 16, tube-height, 0), glass-mat
-    @base  = new THREE.Mesh base-geo, base-mat
-    @bg    = new THREE.Mesh bg-geo, bg-mat
+    @glass = new THREE.Mesh (new THREE.CapsuleGeometry tube-radius, 16, tube-height, 0), Materials.glass
+    @base  = new THREE.Mesh base-geo, Materials.copper
+    @bg    = new THREE.Mesh bg-geo, Materials.nixie-bg
 
     @glass.position.y = tube-height
     @bg.position.y = tube-height/2
@@ -97,7 +71,7 @@ class NixieTube extends Base
 
   create-digit-quad: (digit, ix) ->
     geom  = new THREE.PlaneBufferGeometry @opts.score-tube-radius * 1.5, @opts.score-tube-radius * 3
-    quad  = new THREE.Mesh geom, digit-mats[digit]
+    quad  = new THREE.Mesh geom, Materials.nixie-digits[digit]
 
 
 # Nixie Display

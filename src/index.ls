@@ -33,7 +33,7 @@ game-opts =
 render-opts =
   units-per-meter: 1               # Global scaling factor for feel-correctness
   grid-size:  0.07                 # Abutting size of grid cells containing blocks
-  block-size: 0.069                # Edge length of individual blocks
+  block-size: 0.066                # Edge length of individual blocks
   desk-size: [ 1.6, 0.8, 0.1 ]     # Dimensions of play surface
   camera-distance-from-edge: 0.2   # Horizontal distance from player's eyes to front of desk
   camera-elevation: 0.5            # Vertical distance from desktop to player's eyes
@@ -137,7 +137,7 @@ frame-driver.start!
 #
 
 #delay 30000, frame-driver~stop
-tetris-game.begin-new-game game-state
+#tetris-game.begin-new-game game-state
 #test-easing!
 
 

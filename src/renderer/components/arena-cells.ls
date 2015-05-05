@@ -5,7 +5,7 @@
 
 { Base } = require \./base
 
-{ mesh-materials } = require \../palette
+Materials = require \../mats
 
 
 #
@@ -21,8 +21,7 @@ export class ArenaCells extends Base
     width  = grid-size * gs.arena.width
     height = grid-size * gs.arena.height
 
-    @geom.box = new THREE.BoxGeometry block-size, block-size, block-size
-    @mats.zap = new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff
+    box-geo = new THREE.BoxGeometry block-size, block-size, block-size
 
     @offset = new THREE.Object3D
     @registration.add @offset
@@ -34,7 +33,7 @@ export class ArenaCells extends Base
     @cells =
       for row, y in gs.arena.cells
         for cell, x in row
-          cube = new THREE.Mesh @geom.box, @mats.normal
+          cube = new THREE.Mesh box-geo, Materials.normal
           cube.position.set x * grid-size, y * grid-size, 0
           cube.visible = false
           @offset.add cube
@@ -42,7 +41,7 @@ export class ArenaCells extends Base
 
   toggle-row-of-cells: (row-ix, state) ->
     for box in @cells[row-ix]
-      box.material = @mats.zap
+      box.material = Materials.zap
       box.visible = state
 
   show-zap-effect: ({ arena, rows-to-remove, timers }:gs) ->
@@ -55,5 +54,5 @@ export class ArenaCells extends Base
     for row, y in cells
       for cell, x in row
         @cells[y][x].visible = !!cell
-        @cells[y][x].material = mesh-materials[cell]
+        @cells[y][x].material = Materials.blocks[cell]
 

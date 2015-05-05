@@ -25,13 +25,6 @@ export class Base
     @registration = new THREE.Object3D
     @root.add @registration
 
-    # Define geometry available
-    @geom = {}
-
-    # Define materials available
-    @mats =
-      normal: new THREE.MeshNormalMaterial!
-
   add-registration-helper: ->
     @root.add         new THREE.Mesh helper-marker-geo, red-helper-mat
     @registration.add new THREE.Mesh helper-marker-geo, blue-helper-mat

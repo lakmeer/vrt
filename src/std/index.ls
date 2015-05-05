@@ -27,6 +27,8 @@ export add-v2 = (a, b) -> [ a.0 + b.0, a.1 + b.1 ]
 
 export filter = (λ, list) --> [ x for x in list when λ x ]
 
+export pluck = (p, o) --> o[p]
+
 export pi = Math.PI
 
 export tau = pi * 2

@@ -38,10 +38,10 @@ export class BrickPreview extends Base
     @dome = new THREE.Mesh (new THREE.CapsuleGeometry tube-radius, 16, tube-height, 0), glass-mat
     @dome.position.y = tube-height
 
+    @base = void
+
     @registration.add @dome
     @registration.add @brick.root
-
-    @add-registration-helper!
 
   display-shape: (brick) ->
     @brick.pretty-display-shape brick
