@@ -24,13 +24,16 @@ template =
     else
       "(no change)"
 
-  normal: -> """
+  normal: ->
+    fps-color = if @fps >= 55 then \#0f0 else if @fps >= 30 then \#ff0 else \#f00
+    """
     score - #{template.score.apply @score}
     lines - #{@lines}
 
      meta - #{@metagame-state}
      time - #{@elapsed-time}
     frame - #{@elapsed-frames}
+      fps - <span style="color:#{ fps-color }">#{@fps}</span>
      keys - #{template.keys.apply @input-state}
      drop - #{if @force-down-mode then \soft else \auto}
   """

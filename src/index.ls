@@ -114,7 +114,8 @@ test-easing = ->
 # Frame loop
 #
 
-frame-driver = new FrameDriver (Δt, time, frame) ->
+frame-driver = new FrameDriver (Δt, time, frame, fps) ->
+  game-state.fps            = fps
   game-state.Δt             = Δt/game-opts.time-factor/game-state.slowdown
   game-state.elapsed-time   = time/game-opts.time-factor #/game-state.slowdown
   game-state.elapsed-frames = frame

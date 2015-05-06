@@ -1,7 +1,7 @@
 
 # Require
 
-{ id, log, raf } = require \std
+{ id, log, raf, floor } = require \std
 
 
 #
@@ -11,6 +11,9 @@
 #
 
 export class FrameDriver
+
+  fps-history-window = 20
+
   (@on-frame) ->
     log "FrameDriver::new"
     @state =
@@ -19,16 +22,21 @@ export class FrameDriver
       frame: 0
       running: no
 
+    @fps = 0
+    @fps-history = [ 0 ] * fps-history-window
+
   frame: ~>
     if @state.running then raf @frame
 
     now = Date.now! - @state.zero
     Δt = now - @state.time
 
+    @push-history Δt
+
     @state.time  = now
     @state.frame = @state.frame + 1
     @state.Δt    = Δt
-    @on-frame Δt, @state.time, @state.frame
+    @on-frame Δt, @state.time, @state.frame, @fps
 
   start: ->
     if @state.running is yes then return
@@ -42,4 +50,9 @@ export class FrameDriver
     if @state.running is no then return
     log "FrameDriver::Stop - stopping"
     @state.running = no
+
+  push-history: (Δt) ->
+    @fps-history.push Δt
+    @fps-history.shift!
+    @fps = floor 1000 * fps-history-window / @fps-history.reduce (+), 0
 

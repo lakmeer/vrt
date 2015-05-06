@@ -10,7 +10,6 @@ Materials = require \../mats
 { LED } = require \./led
 
 
-
 # Nixie Tube subcomponent
 
 class NixieTube extends Base
@@ -33,7 +32,7 @@ class NixieTube extends Base
     @mesh-height = mesh-height
 
     # Create geometry
-    bg-geo   = new THREE.PlaneGeometry mesh-width, mesh-height
+    bg-geo   = new THREE.PlaneBufferGeometry mesh-width, mesh-height
     base-geo = new THREE.CylinderGeometry base-radius, base-radius, base-height, 6, 0
     base-geo.apply-matrix new THREE.Matrix4!make-rotation-y pi/6
 
