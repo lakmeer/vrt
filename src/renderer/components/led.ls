@@ -18,18 +18,18 @@ export class LED extends Base
     super ...
 
     @mats =
-      off: new THREE.MeshPhongMaterial do
-        color: 0x440000
-        specular: \red
-        shininess: 1
-
+      off: Materials.glass
       on: new THREE.MeshPhongMaterial do
-        color: \red
-        specular: \black
+        color: 0xfbb03b
+        blending: THREE.AdditiveBlending
+        emissive: 0xfbb0bb
+        specular: \white
         shininess: 100
 
     @bulb  = new THREE.Mesh half-sphere, @mats.off
-    @light = new THREE.PointLight \red, 0, 0.1
+    @light = new THREE.PointLight 0xfbb03b, 0, 0.1
+
+    @light.position.y = 0.02
 
     @registration.add @bulb
     @registration.add @light
@@ -40,7 +40,7 @@ export class LED extends Base
 
   on: ->
     @bulb.material = @mats.on
-    @light.intensity = 1
+    @light.intensity = 0.3
 
   off: ->
     @bulb.material = @mats.off

@@ -25,9 +25,15 @@ class NixieTube extends Base
     tube-height = @opts.score-tube-height
     base-radius = @opts.score-base-radius
     base-height = @opts.score-tube-height / 10
+    lamp-offset = @opts.score-indicator-offset
+    mesh-width  = tube-radius * 1.3
+    mesh-height = tube-radius * 2.5
+
+    @mesh-width  = mesh-width
+    @mesh-height = mesh-height
 
     # Create geometry
-    bg-geo   = new THREE.PlaneGeometry tube-radius * 1.5, tube-radius * 3
+    bg-geo   = new THREE.PlaneGeometry mesh-width, mesh-height
     base-geo = new THREE.CylinderGeometry base-radius, base-radius, base-height, 6, 0
     base-geo.apply-matrix new THREE.Matrix4!make-rotation-y pi/6
 
@@ -40,14 +46,15 @@ class NixieTube extends Base
     @bg    = new THREE.Mesh bg-geo, Materials.nixie-bg
 
     @led   = new LED @opts, gs
-    @led.position.z = 0.12
+    @led.position.z = lamp-offset
 
     @glass.position.y = tube-height
-    @bg.position.y = tube-height/2
+    @bg.position.y = mesh-height/2 + base-height/2
+
     @digits =
       for i, ix in [ 0 to 9 ]
         quad = @create-digit-quad i, ix
-        quad.position.y = tube-height/2
+        quad.position.y = mesh-height/2 + base-height/2
         quad.visible = no
         quad.digit = i
         quad.render-order = 0
@@ -76,7 +83,7 @@ class NixieTube extends Base
     if digit? then @led.on! else @led.off!
 
   create-digit-quad: (digit, ix) ->
-    geom  = new THREE.PlaneBufferGeometry @opts.score-tube-radius * 1.5, @opts.score-tube-radius * 3
+    geom  = new THREE.PlaneBufferGeometry @mesh-width, @mesh-height
     quad  = new THREE.Mesh geom, Materials.nixie-digits[digit]
 
 
@@ -91,6 +98,7 @@ export class NixieDisplay extends Base
     super ...
 
     offset      = @opts.score-offset-from-centre + @opts.score-base-radius
+    margin      = @opts.score-inter-tube-margin
     base-radius = @opts.score-base-radius
 
     @count = 5
@@ -101,7 +109,7 @@ export class NixieDisplay extends Base
     @tubes =
       for i from 0 til @count
         tube = new NixieTube @opts, gs
-        tube.position.x = offset + i * @opts.score-base-radius * 2
+        tube.position.x = margin * i + offset + i * @opts.score-base-radius * 2
         @registration.add tube.root
         tube
 

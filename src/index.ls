@@ -22,11 +22,12 @@
 # Setup
 #
 
-p2m = (* 1.6/2048)
+p2m = (* 1.6/4096)
 
 game-opts =
   tile-width  : 10
   tile-height : 20
+  paused: no
   time-factor : 1
 
 render-opts =
@@ -45,17 +46,19 @@ render-opts =
   arena-offset-from-centre: 0.085        # Adjust horizontal position of arena
   arena-distance-from-edge: 0.57         # Distance from front of desk to front of arena
 
-  score-distance-from-edge: p2m(419)     # Nixie display distance from edge of table
-  score-offset-from-centre: p2m(55)      # Nixie display left-edge distance from centre
-  score-tube-radius: p2m(63)             # Nixie tube radius
-  score-base-radius: p2m(86.5)           # Nixie tube radius
-  score-tube-height: p2m(200)            # Nixie tube height, not including round bit
+  score-distance-from-edge: p2m(780)   # Nixie display distance from edge of table
+  score-offset-from-centre: p2m(436)   # Nixie display left-edge distance from centre
+  score-inter-tube-margin: p2m(5)     # Gap between tubes
+  score-tube-radius: p2m(200/2)          # Nixie tube radius
+  score-base-radius: p2m(275/2)          # Nixie tube radius
+  score-tube-height: p2m(270)            # Nixie tube height, not including round bit
+  score-indicator-offset: p2m(243)       # Distnace from centre of nixie tube to led
 
-  preview-dome-radius: p2m(104)              # Radius of glass dome containing next brick
+  preview-dome-radius: p2m(208)          # Radius of glass dome containing next brick
   preview-dome-height: 0.20              # Height of preview dome, not icluding round bit
-  preview-distance-from-edge: p2m(327)   # Position of next-brick-preview display
-  preview-distance-from-center: p2m(487) # Position of next-brick-preview display from center
-  preview-scale-factor: 0.5              # Show next-brick-preview at smaller scale
+  preview-distance-from-edge: p2m(656)   # Position of next-brick-preview display
+  preview-distance-from-center: p2m(1002) # Position of next-brick-preview display from center
+  preview-scale-factor: 0.5                # Show next-brick-preview at smaller scale
 
 
 input-handler = new InputHandler
@@ -77,6 +80,10 @@ InputHandler.on 192, ->
     frame-driver.stop!
   else
     frame-driver.start!
+
+InputHandler.on 27, ->
+  game-opts.paused = !game-opts.paused
+
 
 #InputHandler.debug-mode!
 
@@ -115,7 +122,9 @@ frame-driver = new FrameDriver (Δt, time, frame) ->
 
   Timer.update-all game-state.Δt
 
-  game-state := tetris-game.run-frame game-state, game-state.Δt
+  if not game-opts.paused
+    game-state := tetris-game.run-frame game-state, game-state.Δt
+
   renderer.render game-state, render-opts
 
   if debug-output

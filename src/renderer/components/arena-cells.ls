@@ -20,6 +20,7 @@ export class ArenaCells extends Base
 
     width  = grid-size * gs.arena.width
     height = grid-size * gs.arena.height
+    margin = (grid-size - block-size) / 2
 
     box-geo = new THREE.BoxGeometry block-size, block-size, block-size
 
