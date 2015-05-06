@@ -4,6 +4,7 @@
 { id, log } = require \std
 
 THREE     = require \three-js-vr-extensions # puts THREE in global scope
+
 Materials = require \./mats
 
 
@@ -29,12 +30,9 @@ export class SceneManager
     @camera   = new THREE.PerspectiveCamera 75, aspect, 0.001, 1000
     @controls = new THREE.VRControls @camera
 
-    @root         = new THREE.Object3D
-    @registration = new THREE.Object3D
-
-    # Apply VR stereo rendering to renderer
-    @effect = new THREE.VREffect @renderer
-    @effect.setSize window.innerWidth - 1, window.innerHeight - 1
+    # VR camera and distortion
+    @vr-effect = new THREE.VREffect @renderer
+    @vr-effect.setSize window.innerWidth - 1, window.innerHeight - 1
 
     # Bind listeners
     window.addEventListener \keydown, @zero-sensor, true
@@ -45,9 +43,11 @@ export class SceneManager
     @state = vr-mode: navigator.getVRDevices?
 
     # Heirarchy
+    @root         = new THREE.Object3D
+    @registration = new THREE.Object3D
+
     @scene.add @root
     @root.add @registration
-
 
   add-registration-helper: ->
     @root.add         new THREE.Mesh helper-marker-geo, Materials.helper-a
@@ -59,7 +59,7 @@ export class SceneManager
     root-axis = new THREE.AxisHelper 0.5
     axis.position.z = @registration.position.z
     root-axis.position.z = @root.position.z
-    #@registration.add axis, root-axis
+    #@scene.add axis, root-axis
 
   enable-shadow-casting: ->
     @renderer.shadow-map-soft     = yes
@@ -74,7 +74,7 @@ export class SceneManager
 
   go-fullscreen: ~>
     log 'Starting fullscreen...'
-    @effect.set-full-screen yes
+    @vr-effect.set-full-screen yes
 
   zero-sensor: ({ key-code }:event) ~>
     event.prevent-default!
@@ -83,13 +83,13 @@ export class SceneManager
   resize: ~>
     @camera.aspect = window.innerWidth / window.innerHeight
     @camera.updateProjectionMatrix!
-    @effect.setSize window.innerWidth, window.innerHeight
+    @vr-effect.setSize window.innerWidth, window.innerHeight
 
   update: ->
     @controls.update!
 
   render: ->
-    @effect.render @scene, @camera
+    @vr-effect.render @scene, @camera
 
   dom-element:~
     -> @renderer.dom-element

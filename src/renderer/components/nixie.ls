@@ -3,9 +3,11 @@
 
 { id, sin, lerp, log, floor, map, split, pi, tau } = require \std
 
+Materials = require \../mats
+
 { Base } = require \./base
 { CapsuleGeometry } = require \../geometry/capsule
-Materials = require \../mats
+{ LED } = require \./led
 
 
 
@@ -37,6 +39,9 @@ class NixieTube extends Base
     @base  = new THREE.Mesh base-geo, Materials.copper
     @bg    = new THREE.Mesh bg-geo, Materials.nixie-bg
 
+    @led   = new LED @opts, gs
+    @led.position.z = 0.12
+
     @glass.position.y = tube-height
     @bg.position.y = tube-height/2
     @digits =
@@ -57,7 +62,7 @@ class NixieTube extends Base
     @registration.add @base
     @registration.add @bg
     @registration.add @light
-
+    @registration.add @led.root
 
   pulse: (t) ->
     if @intensity is 0
@@ -68,6 +73,7 @@ class NixieTube extends Base
   show-digit: (digit) ->
     @intensity = if digit? then 0.5 else 0
     @digits.map -> it.visible = it.digit is digit
+    if digit? then @led.on! else @led.off!
 
   create-digit-quad: (digit, ix) ->
     geom  = new THREE.PlaneBufferGeometry @opts.score-tube-radius * 1.5, @opts.score-tube-radius * 3

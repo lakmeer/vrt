@@ -136,7 +136,7 @@ frame-driver.start!
 #
 
 #delay 30000, frame-driver~stop
-#tetris-game.begin-new-game game-state
+tetris-game.begin-new-game game-state
 #test-easing!
 
 
