@@ -7,37 +7,6 @@ THREE     = require \three-js-vr-extensions # puts THREE in global scope
 
 Materials = require \./mats
 
-
-# Custom Render function
-
-THREE.WebGLRenderer.prototype.renderStereo = (scene, camera, render-target, force-clear, stereo-transforms, stereo-viewports) ->
-  if not camera instanceof THREE.Camera
-    THREE.error 'THREE.WebGLRenderer.renderStereo - camera is not instance of THREE.Camera'
-    return
-
-  updateEverything.call this, scene, camera, render-target, force-clear
-
-  for m, i in stereo-transforms
-    me = m.elements
-    camera.matrix-world.multiply m
-
-    v  = stereo-viewports[i]
-    vx = v.min.x
-    vy = v.min.y
-    vw = v.max.x - vx
-    vh = c.max.y - vy
-    @set-viewport vx, vy, vw, vh
-    @set-scissor vx, vy, vw, vh
-
-    render-everything.call this, scene, camera
-    me.12 *= -1
-    me.13 *= -1
-    me.14 *= -1
-    camera.matrix-world.multiply m
-
-  @enable-scissor-test off
-
-
 #
 # Scene Manager
 #
@@ -79,20 +48,6 @@ export class SceneManager
     @scene.add @root
     @root.add @registration
 
-    # FX Chain
-    fx-stuff = require \../../temp
-
-    @composer = new THREE.EffectComposer @renderer
-    @composer.add-pass new THREE.StereoRenderPass @scene, @camera
-
-    rgb = new THREE.ShaderPass THREE.RGBShiftShader
-    rgb.uniforms.amount.value = 0.004
-    rgb.render-to-screen = on
-    @composer.add-pass rgb
-
-    @dont = window.location.hash is '#dont'
-
-
   add-registration-helper: ->
     @root.add         new THREE.Mesh helper-marker-geo, Materials.helper-a
     @registration.add new THREE.Mesh helper-marker-geo, Materials.helper-b
@@ -133,10 +88,7 @@ export class SceneManager
     @controls.update!
 
   render: ->
-    if @dont
-      @vr-effect.render @scene, @camera
-    else
-      @composer.render @scene, @camera
+    @vr-effect.render @scene, @camera
 
   dom-element:~
     -> @renderer.dom-element

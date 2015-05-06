@@ -57,7 +57,7 @@ gulp.task('copy-libs', function () {
 
 gulp.task('default', [ 'server', 'browserify' ], function () {
   gulp.watch(['src/**/*.ls'], [ 'browserify' ]);
-  gulp.watch(['lib/**/*.js'], [ 'browserify', 'copy-libs' ]);
+  gulp.watch(['lib/**/*.js'], [ 'copy-libs', 'browserify' ]);
   gulp.watch(['public/**/*']).on('change', reload);
 });
 
