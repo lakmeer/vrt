@@ -38,6 +38,7 @@ export class TetrisGame
       @metagame-state    = \game
       @timers.drop-timer.reset!
       @timers.key-repeat-timer.reset!
+      @timers.preview-reveal-timer.reset!
     return game-state
 
   advance-removal-animation: ({ timers, animation-state }:gs) ->
@@ -143,6 +144,7 @@ export class TetrisGame
       else
         Core.copy-brick-to-arena brick.current, arena
         Core.spawn-new-brick gs
+        gs.timers.preview-reveal-timer.reset!
         gs.force-down-mode = off
 
     #

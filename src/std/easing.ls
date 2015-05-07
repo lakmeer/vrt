@@ -5,6 +5,13 @@
 
 
 #
+# API
+#
+# Ease.mode time, start, end
+#
+
+
+#
 # Polynomials
 #
 # For polynomial easing, even powers need negative coefficient, odd ones don't

@@ -45,6 +45,7 @@ export class GameState
       removal-animation: null
       title-reveal-timer: null
       failure-reveal-timer: null
+      preview-reveal-timer: null
 
     options:
       tile-width: 10
@@ -57,6 +58,7 @@ export class GameState
       hard-drop-effect-time: 100
       key-repeat-time: 100
       title-reveal-time: 4000
+      preview-reveal-time: 300
 
     arena:
       cells: [[]]
@@ -73,6 +75,7 @@ export class GameState
     @timers.hard-drop-effect      = new Timer @options.hard-drop-effect-time
     @timers.title-reveal-timer    = new Timer @options.title-reveal-time
     @timers.failure-reveal-timer  = new Timer @options.title-reveal-time
+    @timers.preview-reveal-timer  = new Timer @options.preview-reveal-time
     @arena = @@new-arena @options.tile-width, @options.tile-height
 
     # Force hard drop timer to start at end

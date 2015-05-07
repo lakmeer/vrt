@@ -109,15 +109,15 @@ export class ThreeJsRenderer
       p = gs.timers.removal-animation.progress
       gs.slowdown = 1 + Ease.exp-in p, 2, 0
       @parts.arena.zap-lines gs, @jitter.position
-      @parts.next-brick.update-wiggle gs, gs.elapsed-time
+      @parts.next-brick.update-wiggle gs
       @parts.score.run-to-number gs.timers.removal-animation.progress, gs.score.points
       @parts.score.pulse gs.elapsed-time / 1000
 
     | \game =>
       gs.slowdown = 1
-      @parts.arena.update    gs, @jitter.position
+      @parts.arena.update  gs, @jitter.position
       @parts.next-brick.display-shape gs.brick.next
-      @parts.next-brick.update-wiggle gs, gs.elapsed-time
+      @parts.next-brick.update-wiggle gs
       @parts.score.set-number gs.score.points
       @parts.score.pulse gs.elapsed-time / 1000
 
