@@ -180,18 +180,11 @@ export flare =
     color: 0x0
     transparent: true
     emissive: \white
-    opacity: 0.1
+    opacity: 0.2
     depth-write: off
     blending: THREE.AdditiveBlending
     alpha-map: textures.flare-alpha
 
 export flare-faces =
-  new THREE.MeshFaceMaterial [
-    flare
-    flare
-    empty
-    empty
-    flare
-    flare
-  ]
+  new THREE.MeshFaceMaterial [ flare, flare, empty, empty, flare, flare ]
 

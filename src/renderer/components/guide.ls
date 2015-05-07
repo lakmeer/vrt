@@ -1,7 +1,7 @@
 
 # Require
 
-{ id, log, floor } = require \std
+{ id, sin, log, floor } = require \std
 
 { Base } = require \./base
 
@@ -31,6 +31,8 @@ export class Guide extends Base
     width  = grid-size * gs.arena.width
     @height = grid-size * gs.arena.height
 
+    @gs = gs
+
     @state =
       this-shape: null
       last-shape: null
@@ -48,11 +50,22 @@ export class Guide extends Base
     @registration.add @flare
     @registration.position.x = width/-2 - grid-size/2
 
+    @guide-light = new THREE.PointLight 0xffffff, 1, grid-size * 4
+    @guide-light.position.y = 0.1
+    @registration.add @guide-light
+
+    @impact-light = new THREE.PointLight 0x00ff00, 10, grid-size * 6
+    @impact-light.position.z = 0.1
+    @impact-light.position.y = 0.2
+    #@registration.add @impact-light
+
+
   position-beam: (beam, beam-shape) ->
     w = 1 + beam-shape.max - beam-shape.min
     g = @opts.grid-size
+    x = g * (beam-shape.pos + w/2 + beam-shape.min + 0.5)
     beam.scale.set w, 1, 1   # Scales around center, so incorporate offset
-    beam.position.x = g * (beam-shape.pos + w/2 + beam-shape.min + 0.5)
+    beam.position.x = x
 
   show-beam: (brick) ->
     beam-shape = {
@@ -70,17 +83,25 @@ export class Guide extends Base
           if beam-shape.min > x then beam-shape.min = x
           if beam-shape.max < x then beam-shape.max = x
 
-    @position-beam @beam, beam-shape
+    x = @position-beam @beam, beam-shape
+    @guide-light.position.x = x
     @state.this-shape = beam-shape
+
 
   show-flare: (p, dropped) ->
     if p is 0
       g = @opts.grid-size
       @state.last-shape = beam-shape = @state.this-shape
       @flare.material.materials.map (.emissive?.set-hex beam-shape.color)
-      @position-beam @flare, beam-shape
+      x = @position-beam @flare, beam-shape
       @flare.scale.y = g * (1 + dropped)/@height
       @flare.position.y = @height - g * (beam-shape.height) - g * dropped
 
+      @impact-light.hex = beam-shape.color
+      @impact-light.position.x = x
+      @impact-light.position.y = @height - g * beam-shape.height
+
     @flare.material.materials.map (.opacity = 1 - p)
+    @impact-light.intensity = 10 * ( 1 - p )
+    #@impact-light.distance  = @opts.grid-size * 3 + @opts.grid-size * 3 * sin @gs.elapsed-time / 1000
 
