@@ -27,7 +27,7 @@ p2m = (* 1.6/4096)
 game-opts =
   tile-width  : 10
   tile-height : 20
-  time-factor : 10
+  time-factor : 1
   paused: no
 
 render-opts =
