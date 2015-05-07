@@ -83,6 +83,7 @@ InputHandler.on 192, ->
 
 InputHandler.on 27, ->
   game-opts.paused = !game-opts.paused
+  log if game-opts.paused then "Game time paused" else "Game time unpaused"
 
 
 #InputHandler.debug-mode!

@@ -45,6 +45,36 @@ textures =
 #
 
 
+# Debug Materials
+
+export empty =
+  new THREE.MeshBasicMaterial do
+    visible: no
+    color: 0x0
+    emissive: 0x0
+    opacity: 0
+
+export normal =
+  new THREE.MeshNormalMaterial
+
+export debug-wireframe =
+  new THREE.MeshBasicMaterial do
+    color: \white
+    wireframe: true
+
+export helper-a =
+  new THREE.MeshBasicMaterial do
+    color: 0xff0000
+    transparent: yes
+    opacity: 0.5
+
+export helper-b =
+  new THREE.MeshBasicMaterial do
+    color: 0x00ff00
+    transparent: yes
+    opacity: 0.5
+
+
 # Generic Materials
 
 export glass =
@@ -149,32 +179,19 @@ export flare =
   new THREE.MeshPhongMaterial do
     color: 0x0
     transparent: true
-    opacity: 0.1
     emissive: \white
-    blending: THREE.AdditiveBlending
+    opacity: 0.1
     depth-write: off
+    blending: THREE.AdditiveBlending
     alpha-map: textures.flare-alpha
 
-
-# Debug Materials
-
-export normal =
-  new THREE.MeshNormalMaterial
-
-export debug-wireframe =
-  new THREE.MeshBasicMaterial do
-    color: \white
-    wireframe: true
-
-export helper-a =
-  new THREE.MeshBasicMaterial do
-    color: 0xff0000
-    transparent: yes
-    opacity: 0.5
-
-export helper-b =
-  new THREE.MeshBasicMaterial do
-    color: 0x00ff00
-    transparent: yes
-    opacity: 0.5
+export flare-faces =
+  new THREE.MeshFaceMaterial [
+    flare
+    flare
+    empty
+    empty
+    flare
+    flare
+  ]
 

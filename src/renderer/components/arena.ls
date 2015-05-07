@@ -81,11 +81,9 @@ export class Arena extends Base
     @parts.this-brick.display-shape brick.current
     @parts.this-brick.update-position brick.current.pos
 
-    # Show guide
+    # Show guide beams
+    @parts.guide.show-flare timers.hard-drop-effect.progress, gs.hard-drop-distance
     @parts.guide.show-beam brick.current
-
-    # Show flare effect
-    @parts.guide.show-flare timers.hard-drop-effect.progress
 
     # Return jolt effect value
     position-receiving-jolt.y = @jolt gs

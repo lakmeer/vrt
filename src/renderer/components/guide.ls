@@ -36,25 +36,23 @@ export class Guide extends Base
       last-shape: null
 
     geo = new THREE.BoxGeometry block-size, @height, grid-size * 0.9
+    geo.apply-matrix new THREE.Matrix4!make-translation 0, @height/2, 0
 
-    beam-mat  = Materials.flare
-    flare-mat = Materials.flare.clone!
+    beam-mat  = Materials.flare-faces
+    flare-mat = Materials.flare-faces.clone!
 
-    @beam = new THREE.Mesh geo, beam-mat
-    @registration.add @beam
-
+    @beam  = new THREE.Mesh geo, beam-mat
     @flare = new THREE.Mesh geo, flare-mat
-    @registration.add @flare
 
-    @registration.position.y = @height/2
-    @registration.position.x = width/-2
+    @registration.add @beam
+    @registration.add @flare
+    @registration.position.x = width/-2 - grid-size/2
 
   position-beam: (beam, beam-shape) ->
     w = 1 + beam-shape.max - beam-shape.min
     g = @opts.grid-size
-
-    beam.scale.set w, 1, 1   # Scale around center, so offset
-    beam.position.x = g * (beam-shape.pos + w/2 + beam-shape.min)
+    beam.scale.set w, 1, 1   # Scales around center, so incorporate offset
+    beam.position.x = g * (beam-shape.pos + w/2 + beam-shape.min + 0.5)
 
   show-beam: (brick) ->
     beam-shape = {
@@ -75,15 +73,14 @@ export class Guide extends Base
     @position-beam @beam, beam-shape
     @state.this-shape = beam-shape
 
-  show-flare: (p) ->
+  show-flare: (p, dropped) ->
     if p is 0
-      beam-shape = @state.this-shape
-      w = 1 + beam-shape.max - beam-shape.min
       g = @opts.grid-size
-
-      @flare.material.emissive.set-hex beam-shape.color
+      @state.last-shape = beam-shape = @state.this-shape
+      @flare.material.materials.map (.emissive?.set-hex beam-shape.color)
       @position-beam @flare, beam-shape
-      @flare.position.y = (@height - g * beam-shape.height)
+      @flare.scale.y = g * (1 + dropped)/@height
+      @flare.position.y = @height - g * (beam-shape.height) - g * dropped
 
-    @flare.material.opacity = 1 - p
+    @flare.material.materials.map (.opacity = 1 - p)
 

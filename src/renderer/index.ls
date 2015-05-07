@@ -26,6 +26,8 @@ export class ThreeJsRenderer
     # Setup three.js WebGL renderer with MozVR extensions
     @scene = new SceneManager @opts
 
+    @opts.scene = @scene
+
     # State
     @state =
       frames-since-rows-removed: 0
@@ -105,7 +107,7 @@ export class ThreeJsRenderer
     | \remove-lines =>
       rows = gs.rows-to-remove.length
       p = gs.timers.removal-animation.progress
-      gs.slowdown = 1 + Ease.exp-in p, 10, 0
+      gs.slowdown = 1 + Ease.exp-in p, 2, 0
       @parts.arena.zap-lines gs, @jitter.position
       @parts.next-brick.update-wiggle gs, gs.elapsed-time
       @parts.score.run-to-number gs.timers.removal-animation.progress, gs.score.points
