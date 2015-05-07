@@ -4,7 +4,7 @@
 { Base }           = require \./base
 { Frame }          = require \./frame
 { FallingBrick }   = require \./falling-brick
-{ GuideLines }     = require \./guide-lines
+{ Guide }          = require \./guide
 { ArenaCells }     = require \./arena-cells
 { ParticleEffect } = require \./particle-effect
 
@@ -29,7 +29,7 @@ export class Arena extends Base
 
     @parts =
       frame       : new Frame          @opts, gs
-      guide-lines : new GuideLines     @opts, gs
+      guide       : new Guide          @opts, gs
       arena-cells : new ArenaCells     @opts, gs
       this-brick  : new FallingBrick   @opts, gs
       particles   : new ParticleEffect @opts, gs
@@ -59,6 +59,9 @@ export class Arena extends Base
       @parts.particles.prepare rows-to-remove
       @state.frames-since-rows-removed = 0
 
+    # Flare
+    @parts.guide.show-flare timers.hard-drop-effect.progress
+
     # Jitter n' Jolt
     jolt   = @jolt gs
     jitter = @jitter gs
@@ -66,13 +69,10 @@ export class Arena extends Base
     position-receiving-jolt.x = jitter.0
     position-receiving-jolt.y = jitter.1 + jolt / 10 # Doesn't work somehow?
 
-    # Dance
-    @parts.guide-lines.dance gs.elapsed-time
-
   update-particles: ({ timers }:gs) ->
     @parts.particles.update timers.removal-animation.progress, @state.frames-since-rows-removed, gs.Δt
 
-  update: ({ arena, brick }:gs, position-receiving-jolt) ->
+  update: ({ arena, brick, timers }:gs, position-receiving-jolt) ->
 
     # Render current arena state to blocks
     @parts.arena-cells.update-cells arena.cells
@@ -81,8 +81,11 @@ export class Arena extends Base
     @parts.this-brick.display-shape brick.current
     @parts.this-brick.update-position brick.current.pos
 
-    # Show lines
-    @parts.guide-lines.show-beam brick.current
+    # Show guide
+    @parts.guide.show-beam brick.current
+
+    # Show flare effect
+    @parts.guide.show-flare timers.hard-drop-effect.progress
 
     # Return jolt effect value
     position-receiving-jolt.y = @jolt gs

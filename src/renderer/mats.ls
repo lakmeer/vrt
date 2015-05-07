@@ -35,6 +35,10 @@ textures =
   table-top-specular:
     THREE.ImageUtils.load-texture asset-path "board.spec.png"
 
+  flare-alpha:
+    THREE.ImageUtils.load-texture asset-path "flare.alpha.png"
+
+
 
 #
 # Materials Library
@@ -139,7 +143,23 @@ export lines =
       color: color
 
 
+# Holograms
+
+export flare =
+  new THREE.MeshPhongMaterial do
+    color: 0x0
+    transparent: true
+    opacity: 0.1
+    emissive: \white
+    blending: THREE.AdditiveBlending
+    depth-write: off
+    alpha-map: textures.flare-alpha
+
+
 # Debug Materials
+
+export normal =
+  new THREE.MeshNormalMaterial
 
 export debug-wireframe =
   new THREE.MeshBasicMaterial do

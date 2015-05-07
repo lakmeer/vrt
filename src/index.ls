@@ -27,8 +27,8 @@ p2m = (* 1.6/4096)
 game-opts =
   tile-width  : 10
   tile-height : 20
-  paused: no
   time-factor : 1
+  paused: no
 
 render-opts =
   units-per-meter: 1               # Global scaling factor for feel-correctness
@@ -121,9 +121,8 @@ frame-driver = new FrameDriver (Δt, time, frame, fps) ->
   game-state.elapsed-frames = frame
   game-state.input-state    = input-handler.changes-since-last-frame!
 
-  Timer.update-all game-state.Δt
-
   if not game-opts.paused
+    Timer.update-all game-state.Δt
     game-state := tetris-game.run-frame game-state, game-state.Δt
 
   renderer.render game-state, render-opts
