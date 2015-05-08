@@ -45,10 +45,10 @@ export class ArenaCells extends Base
       box.material = Materials.zap
       box.visible = state
 
-  show-zap-effect: ({ arena, rows-to-remove, timers }:gs) ->
-    on-off = timers.removal-animation.progress < 0.4 and !!((floor timers.removal-animation.current-time * 10) % 2)
-    on-off = !((floor timers.removal-animation.current-time) % 2)
-    for row-ix in rows-to-remove
+  show-zap-effect: ({ arena, core }:gs) ->
+    on-off = arena.zap-animation.progress < 0.4 and !!((floor arena.zap-animation.current-time * 10) % 2)
+    on-off = !((floor arena.zap-animation.current-time) % 2)
+    for row-ix in core.rows-to-remove
       @toggle-row-of-cells row-ix, on-off
 
   update-cells: (cells) ->

@@ -3,12 +3,9 @@
 
 { log, delay } = require \std
 
-{ FrameDriver }  = require \./utils/frame-driver
-{ InputHandler } = require \./utils/input-handler
-{ Timer }        = require \./utils/timer
-{ GameState }    = require \./utils/game-state
-{ DebugOutput }  = require \./utils/debug-output
-
+{ FrameDriver }     = require \./utils/frame-driver
+{ InputHandler }    = require \./utils/input-handler
+{ DebugOutput }     = require \./utils/debug-output
 { TetrisGame }      = require \./game
 { ThreeJsRenderer } = require \./renderer
 
@@ -22,51 +19,15 @@
 # Setup
 #
 
-p2m = (* 1.6/4096)
+game-state     = { metagame-state: \no-game }
+game-options   = require \./config/game
+render-options = require \./config/scene
 
-game-opts =
-  tile-width  : 10
-  tile-height : 20
-  time-factor : 1
-  paused: no
+input-handler  = new InputHandler
+tetris-game    = new TetrisGame game-state, game-options
+renderer       = new ThreeJsRenderer render-options, game-state, game-options
 
-render-opts =
-  units-per-meter: 1               # Global scaling factor for feel-correctness
-  grid-size:  0.07                 # Abutting size of grid cells containing blocks
-  block-size: 0.066                # Edge length of individual blocks
-  desk-size: [ 1.6, 0.8, 0.1 ]     # Dimensions of play surface
-  camera-distance-from-edge: 0.2   # Horizontal distance from player's eyes to front of desk
-  camera-elevation: 0.5            # Vertical distance from desktop to player's eyes
-  hard-drop-jolt-amount: 0.03      # Maximum excursion of 'jolt' effect when bricks land
-  zap-particle-size: 0.008         # Size in meters of zap particles
-
-
-  # Scene composition
-
-  arena-offset-from-centre: 0.085        # Adjust horizontal position of arena
-  arena-distance-from-edge: 0.57         # Distance from front of desk to front of arena
-
-  score-distance-from-edge: p2m(780)   # Nixie display distance from edge of table
-  score-offset-from-centre: p2m(436)   # Nixie display left-edge distance from centre
-  score-inter-tube-margin: p2m(5)     # Gap between tubes
-  score-tube-radius: p2m(200/2)          # Nixie tube radius
-  score-base-radius: p2m(275/2)          # Nixie tube radius
-  score-tube-height: p2m(270)            # Nixie tube height, not including round bit
-  score-indicator-offset: p2m(243)       # Distnace from centre of nixie tube to led
-
-  preview-dome-radius: p2m(208)          # Radius of glass dome containing next brick
-  preview-dome-height: 0.20              # Height of preview dome, not icluding round bit
-  preview-distance-from-edge: p2m(656)   # Position of next-brick-preview display
-  preview-distance-from-center: p2m(1002) # Position of next-brick-preview display from center
-  preview-scale-factor: 0.5                # Show next-brick-preview at smaller scale
-
-
-input-handler = new InputHandler
-game-state    = new GameState game-opts
-tetris-game   = new TetrisGame game-state
-
-renderer = new ThreeJsRenderer render-opts, game-state
-renderer.append-to document.body
+time-factor    = 2
 
 
 #
@@ -82,11 +43,45 @@ InputHandler.on 192, ->
     frame-driver.start!
 
 InputHandler.on 27, ->
-  game-opts.paused = !game-opts.paused
-  log if game-opts.paused then "Game time paused" else "Game time unpaused"
+  game-state.core.paused = !game-state.core.paused
+  log if game-state.core.paused then "Game time paused" else "Game time unpaused"
 
 
-#InputHandler.debug-mode!
+
+#
+# Frame loop
+#
+
+frame-driver = new FrameDriver (Δt, time, frame, fps) ->
+
+  # Update gamestate with incoming external data
+  game-state := tetris-game.update game-state, do
+    input : input-handler.changes-since-last-frame!
+    Δt    : Δt/time-factor
+    time  : time/time-factor
+    frame : frame
+    fps   : fps
+
+  # Render new gamestate
+  renderer.render game-state
+  debug-output?.render game-state
+
+
+#
+# Init
+#
+
+renderer.append-to document.body
+frame-driver.start!
+
+
+#
+# Debug:
+#
+
+#delay 30000, frame-driver~stop
+tetris-game.begin-new-game game-state
+#InputHandler.debug-mode!  # Prints incoming keys
 
 test-easing = ->
   { Ease } = require \std
@@ -109,44 +104,3 @@ test-easing = ->
     for i from 0 to 100
       p = i / 100
       ctx.fill-rect 2 * i, 200 - (ease p, 0, 200), 2, 2
-
-
-#
-# Frame loop
-#
-
-frame-driver = new FrameDriver (Δt, time, frame, fps) ->
-  game-state.fps            = fps
-  game-state.Δt             = Δt/game-opts.time-factor/game-state.slowdown
-  game-state.elapsed-time   = time/game-opts.time-factor #/game-state.slowdown
-  game-state.elapsed-frames = frame
-  game-state.input-state    = input-handler.changes-since-last-frame!
-
-  if not game-opts.paused
-    Timer.update-all game-state.Δt
-    game-state := tetris-game.run-frame game-state, game-state.Δt
-
-  renderer.render game-state, render-opts
-
-  if debug-output
-    debug-output.render game-state
-
-
-#
-# Init
-#
-
-#<- delay 1000
-
-frame-driver.start!
-
-
-#
-# Debug:
-#
-
-#delay 30000, frame-driver~stop
-tetris-game.begin-new-game game-state
-#test-easing!
-
-

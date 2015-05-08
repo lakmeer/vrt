@@ -7,7 +7,13 @@ ascii-progress-bar = (len, val, max) -->
   val = if val > max then max else val
   value-chars = floor len * val / max
   empty-chars = len - value-chars
-  "▒" * value-chars + "-" * empty-chars
+  "+" * value-chars + "-" * empty-chars
+
+
+# Internal State
+
+[ TIMER_ACTIVE, TIMER_EXPIRED ] = [ 0, 1 ]
+
 
 #
 # Timer
@@ -15,68 +21,83 @@ ascii-progress-bar = (len, val, max) -->
 # Tracks wehther a given amount of time has passed since first triggered
 #
 
-export class Timer
 
-  all-timers = []
-  progbar = ascii-progress-bar 21
+# Constructor
 
-  [ TIMER_ACTIVE, TIMER_EXPIRED ] = [ 0, 1 ]
+export create = (name = "Unnamed Timer", target-time = 1000, begin = no) ->
+  log "New Timer:", name, target-time
+  current-time : 0
+  target-time: target-time
+  progress: 0
+  state : if begin then TIMER_ACTIVE else TIMER_EXPIRED
+  active : begin
+  expired : not begin
+  time-to-expiry : target-time
+  name: name
 
-  (@target-time = 1000, begin = no) ->
-    if @target-time is 0 then throw "Timer::reset - target time must be non-zero"
-    @current-time = 0
-    @state = if begin then TIMER_ACTIVE else TIMER_EXPIRED
-    @active = begin
-    @expired = not begin
-    all-timers.push this
 
-  active:~ -> @state is TIMER_ACTIVE
-  expired:~ -> @state is TIMER_EXPIRED
-  progress:~ -> @current-time / @target-time
+# Important functions
 
-  expire: ->
-    @current-time = @target-time
-    @state = TIMER_EXPIRED
+export update = (timer, Δt) ->
+  if timer.active
+    set-time timer, timer.current-time + Δt
 
-  time-to-expiry:~
-    -> @target-time - @current-time
-    (exp-time) -> @current-time = @target-time - exp-time
+export reset = (timer, time = timer.target-time) ->
+  log "Timer::reset -", timer.name, time
+  timer.target-time = time
+  set-time timer, 0
+  set-state timer, TIMER_ACTIVE
 
-  update: (Δt) ->
-    if @active
-      @current-time += Δt
-      if @current-time >= @target-time
-        @state = TIMER_EXPIRED
+export stop = (timer) ->
+  set-time timer, 0
+  set-state timer, TIMER_EXPIRED
 
-  reset: (time = @target-time) ->
-    if time is 0 then throw "Timer::reset - target time must be non-zero"
-    @current-time = 0
-    @target-time = time
-    @state = TIMER_ACTIVE
 
-  reset-with-remainder: (time = @target-time) ->
-    if time is 0 then throw "Timer::reset - target time must be non-zero"
-    @current-time = @current-time - time
-    @target-time = time
-    @state = TIMER_ACTIVE
+# Auxiliary functions
 
-  stop: ->
-    @current-time = 0
-    @state = TIMER_EXPIRED
+export run-for = (timer, time) ->
+  timer.time-to-expiry = time
+  set-state timer, TIMER_ACTIVE
 
-  destroy: ->
-    all-timers.splice (all-timers.index-of this), 1
+export progress-of = (timer) ->
+  timer.current-time / timer.target-time
 
-  run-for: (time) ->
-    @time-to-expiry = time
-    @state = TIMER_ACTIVE
+export time-to-expiry = (timer) ->
+  timer.target-time - timer.current-time
 
-  to-string: -> """
-    TIMER: #{@target-time}
-    STATE: #{@state} (#{@active}|#{@expired})
-    #{progbar @current-time, @target-time}
+export set-time-to-expiry = (timer, expiry-time) ->
+  set-time timer, timer.target-time - expiry-time
+
+export reset-with-remainder = (timer, remainder) ->
+  remainder ?= timer.current-time - timer.target-time
+  set-time timer, remainder
+  set-state timer, TIMER_ACTIVE
+
+export to-string = do ->
+  progbar = ascii-progress-bar 6
+  (timer) -> """
+    #{progbar timer.current-time, timer.target-time} #{timer.name + " " + timer.target-time} (#{timer.active}|#{timer.expired})
   """
 
-  @update-all = (Δt) ->
-    all-timers.map (.update Δt)
+export update-all-in = (thing, Δt) ->
+  if thing.target-time?
+    update thing, Δt
+  else if typeof thing is \object
+    for k, v of thing when v
+      update-all-in v, Δt
+
+
+# Internal helpers
+
+set-state = (timer, state) ->
+  timer.state = state
+  timer.expired = state is TIMER_EXPIRED
+  timer.active = state isnt TIMER_EXPIRED
+
+set-time = (timer, time) ->
+  timer.current-time = time
+  timer.progress = timer.current-time / timer.target-time
+  if timer.current-time >= timer.target-time
+    timer.progress = 1
+    set-state timer, TIMER_EXPIRED
 

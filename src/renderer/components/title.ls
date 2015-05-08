@@ -13,7 +13,6 @@ Materials = require \../mats
 # Text shapes
 #
 
-
 block-text =
   tetris:
     * [ 1 1 1 2 2 2 3 3 3 4 4 0 5 6 6 6 ]
@@ -21,12 +20,14 @@ block-text =
     * [ 0 1 0 2 2 0 0 3 0 4 4 0 5 6 6 6 ]
     * [ 0 1 0 2 0 0 0 3 0 4 0 4 5 0 0 6 ]
     * [ 0 1 0 2 2 2 0 3 0 4 0 4 5 6 6 6 ]
+
   vrt:
     * [ 1 0 1 4 4 6 6 6 ]
     * [ 1 0 1 4 0 4 6 0 ]
     * [ 1 0 1 4 4 0 6 0 ]
     * [ 1 0 1 4 0 4 6 0 ]
     * [ 0 1 0 4 0 4 6 0 ]
+
   ghost:
     * [ 1 1 1 2 0 2 3 3 3 4 4 4 5 5 5 ]
     * [ 1 0 0 2 0 2 3 0 3 4 0 0 0 5 0 ]
@@ -64,13 +65,8 @@ export class Title extends Base
       for cell, x in row
         if cell
           box = new THREE.Mesh block-geo, Materials.blocks[cell]
-          box.position.set grid-size * x + margin, grid-size * (text.length/2 - y) + margin, grid-size/-2
+          box.position.set grid-size * x + margin, grid-size * (text.length - y) + margin, grid-size/-2
           @word.add box
-
-    # Bounding box visualiser
-    bbox = new THREE.BoundingBoxHelper @word, 0xff0000
-    bbox.update!
-    #@registration.add bbox
 
   reveal: (progress) ->
     p = (min 1, progress)
