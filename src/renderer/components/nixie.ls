@@ -14,7 +14,6 @@ Materials = require \../mats
 
 class NixieTube extends Base
 
-
   (@opts, gs) ->
 
     super ...
@@ -96,7 +95,7 @@ export class NixieDisplay extends Base
 
     super ...
 
-    offset      = @opts.score-offset-from-centre + @opts.score-base-radius
+    offset      = @opts.score-distance-from-centre + @opts.score-base-radius
     margin      = @opts.score-inter-tube-margin
     base-radius = @opts.score-base-radius
 

@@ -3,6 +3,8 @@
 
 { id, log, unlines } = require \std
 
+Timer = require \../utils/timer
+
 
 # Templates
 
@@ -28,14 +30,15 @@ template =
     fps-color = if @fps >= 55 then \#0f0 else if @fps >= 30 then \#ff0 else \#f00
     """
     score - #{template.score.apply @score}
-    lines - #{@lines}
 
      meta - #{@metagame-state}
      time - #{@elapsed-time}
     frame - #{@elapsed-frames}
       fps - <span style="color:#{ fps-color }">#{@fps}</span>
      keys - #{template.keys.apply @input-state}
-     drop - #{if @force-down-mode then \soft else \auto}
+
+     drop - #{Timer.to-string @core.drop-timer}
+      zap - #{Timer.to-string @arena.zap-animation}
   """
 
   menu-items: -> """
@@ -63,7 +66,7 @@ template =
 
     Total Lines: #{@score.lines}
 
-    #{ template.menu-items.apply this.fail-menu-state }
+    #{ template.menu-items.apply this.game-over }
   """
 
 #
@@ -84,6 +87,7 @@ export class DebugOutput
     switch state.metagame-state
     | \game         => @dbo.innerHTML = template.normal.apply state
     | \failure      => @dbo.innerHTML = template.failure.apply state
-    | \start-menu   => @dbo.innerHTML = template.start-menu.apply state.start-menu-state
+    | \start-menu   => @dbo.innerHTML = template.start-menu.apply state.start-menu
     | \remove-lines => @dbo.innerHTML = template.normal.apply state
     | otherwise     => @dbo.innerHTML = "Unknown metagame state: " + state.metagame-state
+

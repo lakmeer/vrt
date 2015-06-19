@@ -1,15 +1,17 @@
 
 # Require
 
-{ id, log, rand } = require \std
-{ random-from } = require \std
+{ id, log, rand, random-from } = require \std
 
 Core      = require \./game-core
+Arena     = require \./arena
+Brick     = require \./brick
+Score     = require \./score
 StartMenu = require \./start-menu
-FailMenu  = require \./fail-menu
+GameOver  = require \./game-over
 
+Timer     = require \../utils/timer
 
-# Pure Helpers
 
 #
 # Tetris Game
@@ -19,208 +21,195 @@ FailMenu  = require \./fail-menu
 
 export class TetrisGame
 
-  (game-state) ->
-    log "TetrisGame::new"
+  (game-state, game-options) ->
+    Core.prime-game-state      game-state, game-options
+    Arena.prime-game-state     game-state, game-options
+    Brick.prime-game-state     game-state, game-options
+    Score.prime-game-state     game-state, game-options
+    StartMenu.prime-game-state game-state, game-options
+    GameOver.prime-game-state  game-state, game-options
 
-    # Each module should prime it's own chunk of the state
-    StartMenu.prime-game-state game-state
-    FailMenu.prime-game-state game-state
-    # ... and so on, when I get around to it
+  begin-new-game: (gs) ->
+    gs.metagame-state = \game
+    Arena.clear-arena gs.arena
+    Score.reset-score gs.score
+    Brick.reset-state gs.brick
+    return gs
 
-  begin-new-game: (game-state) ->
-    let this = game-state
-      Core.clear-arena @arena
-      @brick.next        = Core.new-brick!
-      @brick.next.pos    = [3 -1]
-      @brick.current     = Core.new-brick!
-      @brick.current.pos = [3 -1]
-      Core.reset-score @score
-      @metagame-state    = \game
-      @timers.drop-timer.reset!
-      @timers.key-repeat-timer.reset!
-      @timers.preview-reveal-timer.reset!
-    return game-state
+  reveal-start-menu: (gs) ->
+    gs.metagame-state = \start-menu
+    StartMenu.begin-reveal gs
 
-  advance-removal-animation: ({ timers, animation-state }:gs) ->
-    if timers.removal-animation.expired
-      Core.remove-rows gs.rows-to-remove, gs.arena
-      gs.rows-to-remove = []
-      gs.metagame-state = \game
+  reveal-game-over: (gs) ->
+    gs.metagame-state = \failure
+    Timer.reset gs.game-over.reveal-animation
 
-  handle-key-input: ({ brick, arena, input-state }:gs) ->
-    while input-state.length
-      { key, action } = input-state.shift!
+  handle-key-input: ({ brick, arena, input }:gs) ->
+    while input.length
+      { key, action } = input.shift!
+
       if action is \down
         switch key
+
         | \left =>
-          if Core.can-move brick.current, [-1, 0 ], arena
+          if Arena.can-move brick.current, [-1, 0 ], arena
             brick.current.pos.0 -= 1
+
         | \right =>
-          if Core.can-move brick.current, [ 1, 0 ], arena
+          if Arena.can-move brick.current, [ 1, 0 ], arena
             brick.current.pos.0 += 1
+
         | \down =>
-          #gs.timers.drop-timer.time-to-expiry = 0
-          gs.force-down-mode = on
+          gs.core.soft-drop-mode = on
+
         | \up, \cw =>
-          if Core.can-rotate brick.current, 1, arena
-            Core.rotate-brick brick.current, 1
+          if Arena.can-rotate brick.current, 1, arena
+            Brick.rotate-brick brick.current, 1
+
         | \ccw =>
-          if Core.can-rotate brick.current, -1, arena
-            Core.rotate-brick brick.current, -1
+          if Arena.can-rotate brick.current, -1, arena
+            Brick.rotate-brick brick.current, -1
+
         | \hard-drop =>
-          gs.hard-drop-distance = 0
-          while Core.can-drop brick.current, arena
-            gs.hard-drop-distance += 1
+          gs.core.hard-drop-distance = 0
+          while Arena.can-drop brick.current, arena
+            gs.core.hard-drop-distance += 1
             brick.current.pos.1 += 1
-          gs.input-state = []
-          gs.timers.hard-drop-effect.reset 1 + gs.hard-drop-distance * 10 # Don't divide by zero
-          gs.timers.drop-timer.time-to-expiry = -1
+          gs.input = []
+          Timer.reset gs.core.hard-drop-animation, gs.core.hard-drop-distance * 10 + 1 # Don't divide by zero
+          Timer.set-time-to-expiry gs.core.drop-timer, -1
+
         | \debug-1, \debug-2, \debug-3, \debug-4 =>
           amt = parse-int key.replace /\D/g, ''
           log "DEBUG: Destroying rows:", amt
-          gs.rows-to-remove = for i from gs.arena.height - amt to gs.arena.height - 1 => i
+          gs.core.rows-to-remove = for i from gs.arena.height - amt to gs.arena.height - 1 => i
           gs.metagame-state = \remove-lines
-          gs.flags.rows-removed-this-frame = yes
-          gs.timers.removal-animation.reset Core.animation-time-for-rows gs.rows-to-remove
-          Core.compute-score gs.score, gs.rows-to-remove
+          gs.core.rows-removed-this-frame = yes
+          Timer.reset gs.arena.zap-animation, Core.animation-time-for-rows gs.core.rows-to-remove
+          Score.update-score gs, gs.core.rows-to-remove
+
         | \debug-5 =>  # Sets up tetris scenario
           pos = gs.brick.current.pos
-          gs.brick.current = Core.new-brick 6
+          gs.brick.current = Brick.new-brick 6
           gs.brick.current.pos <<< pos
           for y from (arena.height - 1) to (arena.height - 4) by -1
             for x from 0 to arena.width - 2
               arena.cells[y][x] = 1
+
         | \debug-6 =>
-          gs.rows-to-remove = [ 10, 12, 14 ]
+          gs.core.rows-to-remove = [ 10, 12, 14 ]
           gs.metagame-state = \remove-lines
-          gs.flags.rows-removed-this-frame = yes
-          gs.timers.removal-animation.reset Core.animation-time-for-rows gs.rows-to-remove
+          gs.core.rows-removed-this-frame = yes
+          Timer.reset gs.arena.zap-animation, Core.animation-time-for-rows gs.core.rows-to-remove
 
       else if action is \up
         switch key
         | \down =>
-          gs.force-down-mode = off
+          gs.core.soft-drop-mode = off
 
   clear-one-frame-flags: (gs) ->
-    gs.flags.rows-removed-this-frame = no
+    gs.core.rows-removed-this-frame = no
 
-  advance-game: ({ brick, arena, input-state }:gs) ->
+  zap-tick: (gs) ->
+    if gs.arena.zap-animation.expired
+      Arena.remove-rows gs.arena, gs.core.rows-to-remove
+      gs.core.rows-to-remove = []
+      gs.metagame-state = \game
 
-    # Reset one-frame-only state flags
-    #gs.hard-drop-distance = 0
+  game-tick: ({ brick, arena, input }:gs) ->
 
     # Check for completed lines.
-    complete-rows = [ ix for row, ix in arena.cells when Core.is-complete row ]
+    complete-rows = [ ix for row, ix in arena.cells when Arena.row-is-complete row ]
 
     # If found, flag them for removal and set the animation going
     if complete-rows.length
 
       # Wait for animation
       gs.metagame-state = \remove-lines
-      gs.flags.rows-removed-this-frame = true
-      gs.rows-to-remove = complete-rows
-      gs.timers.removal-animation.reset 10 + 3 ** gs.rows-to-remove.length
+      gs.core.rows-removed-this-frame = true
+      gs.core.rows-to-remove = complete-rows
+      Timer.reset gs.arena.zap-animation, Core.animation-time-for-rows gs.core.rows-to-remove
 
       # Add any dropped lines to score
-      Core.compute-score gs.score, gs.rows-to-remove
+      Score.update-score gs, gs.core.rows-to-remove
       return
 
     # Check if top has been reached. If so, change game mode to fail
-    if Core.top-is-reached arena
-      @reveal-fail-screen gs
+    if Arena.top-is-reached arena
+      @reveal-game-over gs
       return
 
     # If the game is in force-down mode, drop the brick every frame
-    if gs.force-down-mode #and gs.timers.force-drop-wait-timer.expired
-      gs.timers.drop-timer.time-to-expiry = 0
+    if gs.core.soft-drop-mode
+      Timer.set-time-to-expiry gs.core.drop-timer, 0
 
     # If the drop-timer has expired, drop current brick.
-    if gs.timers.drop-timer.expired
-      gs.timers.drop-timer.reset-with-remainder!
+    if gs.core.drop-timer.expired
+      Timer.reset-with-remainder gs.core.drop-timer
 
       # If it hits, save it to the arena and make a new one
-      if Core.can-drop brick.current, arena
+      if Arena.can-drop brick.current, arena
         brick.current.pos.1 += 1
       else
-        Core.copy-brick-to-arena brick.current, arena
-        Core.spawn-new-brick gs
-        gs.timers.preview-reveal-timer.reset!
-        gs.force-down-mode = off
+        Arena.copy-brick-to-arena brick.current, arena
+        Brick.spawn-new-brick gs
+        Timer.reset gs.core.preview-reveal-animation
+        gs.core.soft-drop-mode = off
 
-    #
     # If nothing else going on this frame, THEN handle user input
-    #
-
     @handle-key-input gs
 
-      #if Core.can-drop brick.current, arena
-      #  brick.current.pos.1 += 1
-      #else
-      #  Core.copy-brick-to-arena brick.current, arena
-      #  gs.force-down-mode = off
-      #  gs.timers.force-drop-wait-timer.reset!
-      #  gs.timers.drop-timer.time-to-expiry = gs.timers.force-drop-wait-timer.target-time
-
-  show-start-screen: ({ input-state, start-menu-state }:gs) ->
-
-    # Handle user input
-    while input-state.length
-      { key, action } = input-state.shift!
+  game-over-tick: ({ input, game-over }:gs, Δt) ->
+    while input.length
+      { key, action } = input.shift!
       if action is \down
         switch key
         | \up =>
-          StartMenu.select-prev-item start-menu-state
+          GameOver.select-prev-item game-over
         | \down =>
-          StartMenu.select-next-item start-menu-state
+          GameOver.select-next-item game-over
         | \action-a, \confirm =>
-          if start-menu-state.current-state.state is \start-game
+          if game-over.current-state.state is \restart
             @begin-new-game gs
-
-      else if action is \up
-        switch key
-        | \down =>
-          gs.force-down-mode = off
-
-  reveal-start-screen: ({ timers }:gs) ->
-    timers.title-reveal-timer.reset!
-    gs.metagame-state = \start-menu
-
-  show-fail-screen: ({ input-state, fail-menu-state }:gs, Δt) ->
-    while input-state.length
-      { key, action } = input-state.shift!
-      if action is \down
-        switch key
-        | \up =>
-          FailMenu.select-prev-item fail-menu-state
-        | \down =>
-          FailMenu.select-next-item fail-menu-state
-        | \action-a, \confirm =>
-          log fail-menu-state.current-state.state
-          if fail-menu-state.current-state.state is \restart
-            @begin-new-game gs
-          else if fail-menu-state.current-state.state is \go-back
-            @reveal-start-screen gs
+          else if game-over.current-state.state is \go-back
+            @reveal-start-menu gs
         | \action-a, \confirm =>
 
           @begin-new-game gs
 
-  reveal-fail-screen: (gs) ->
-    gs.timers.failure-reveal-timer.reset!
-    gs.metagame-state = \failure
+  start-menu-tick: ({ input, start-menu }:gs) ->
+    while input.length
+      { key, action } = input.shift!
 
-  run-frame: ({ metagame-state }:game-state, Δt) ->
-    @clear-one-frame-flags game-state
-    switch metagame-state
-    | \failure     => @show-fail-screen ...
-    | \game        => @advance-game ...
-    | \no-game     => @reveal-start-screen ...
-    | \start-menu  => @show-start-screen ...
-    | \remove-lines => @advance-removal-animation ...
-    | otherwise => console.debug 'Unknown metagame-state:', metagame-state
-    return game-state
+      if action is \down
+        switch key
+        | \up =>
+          StartMenu.select-prev-item start-menu
+        | \down =>
+          StartMenu.select-next-item start-menu
+        | \action-a, \confirm =>
+          if start-menu.current-state.state is \start-game
+            @begin-new-game gs
 
+  update: (gs, { Δt, time, frame, fps, input }) ->
+    gs.fps            = fps
+    gs.Δt             = Δt
+    gs.elapsed-time   = time
+    gs.elapsed-frames = frame
+    gs.input          = input
 
-# Export
+    if not gs.core.paused
+      Timer.update-all-in gs, Δt
 
-module.exports = { TetrisGame }
+    @clear-one-frame-flags gs
+
+    switch gs.metagame-state
+    | \no-game      => @reveal-start-menu ...
+    | \game         => @game-tick ...
+    | \failure      => @game-over-tick ...
+    | \start-menu   => @start-menu-tick ...
+    | \remove-lines => @zap-tick ...
+    | otherwise => console.debug 'Unknown metagame-state:', gs.metagame-state
+
+    return gs
 

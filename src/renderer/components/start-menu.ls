@@ -46,7 +46,7 @@ export class StartMenu extends Base
     @options = []
 
     # Create menu options
-    for option, ix in gs.start-menu-state.menu-data
+    for option, ix in gs.start-menu.menu-data
       quad = @create-option-quad option, ix
       quad.position.y = 0.5 - ix * 0.2
       @options.push quad
@@ -66,9 +66,9 @@ export class StartMenu extends Base
     mat   = new THREE.MeshPhongMaterial map: tex, alpha-map: tex, transparent: yes
     quad  = new THREE.Mesh geom, mat
 
-  update: ({{ title-reveal-timer }:timers }:gs) ->
-    @title.reveal title-reveal-timer.progress
-    @update-selection gs.start-menu-state, gs.elapsed-time
+  update: ({ start-menu }:gs) ->
+    @title.reveal start-menu.title-reveal-animation.progress
+    @update-selection gs.start-menu, gs.elapsed-time
 
   update-selection: (state, time) ->
     for quad, ix in @options when ix is state.current-index

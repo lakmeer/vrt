@@ -3,6 +3,8 @@
 
 { id, log, wrap } = require \std
 
+Timer = require \../utils/timer
+
 
 # Helpers
 
@@ -22,11 +24,29 @@ limiter = wrap 0, menu-data.length - 1
 # Ideally this should just be a collection of stateless processing functions.
 #
 
-export prime-game-state = (gamestate) ->
-  gamestate.start-menu-state =
+export prime-game-state = (gs, options) ->
+  gs.start-menu =
     current-index: 0
     current-state: menu-data[0]
     menu-data: menu-data
+    title-reveal-animation: Timer.create "Title reveal animation", options.animation.title-reveal-time
+
+export update = (gs) ->
+  return handle-input gs, gs.input
+
+
+
+#
+# Events
+#
+
+export begin-reveal = (gs) ->
+  Timer.reset gs.start-menu.title-reveal-animation
+
+
+#
+# Menu Handling
+#
 
 export choose-option = (sms, index) ->
   sms.current-index = limiter index

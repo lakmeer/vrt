@@ -7,8 +7,9 @@
 { Brick } = require \./brick
 { Ease } = require \std
 
+
 #
-# Class
+# Brick Preview
 #
 
 export class BrickPreview extends Base
@@ -57,9 +58,9 @@ export class BrickPreview extends Base
     @brick.pretty-display-shape brick
     #@light.color.set-hex @color = Palette.spec-colors[brick.color]
 
-  update-wiggle: ({ elapsed-time, timers }:gs) ->
+  update-wiggle: ({ elapsed-time }:gs) ->
     @root.rotation.y = 0.2 * sin elapsed-time / 500
-    t = min 1, timers.preview-reveal-timer.progress
+    t = min 1, gs.core.preview-reveal-animation.progress
     p = Ease.cubic-in t, 0, @s
     @brick.root.scale.set p, p, p
 

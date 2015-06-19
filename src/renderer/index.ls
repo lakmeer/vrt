@@ -105,17 +105,17 @@ export class ThreeJsRenderer
       log \no-game
 
     | \remove-lines =>
-      rows = gs.rows-to-remove.length
-      p = gs.timers.removal-animation.progress
+      rows = gs.core.rows-to-remove.length
+      p = gs.arena.zap-animation.progress
       gs.slowdown = 1 + Ease.exp-in p, 2, 0
       @parts.arena.zap-lines gs, @jitter.position
       @parts.next-brick.update-wiggle gs
-      @parts.score.run-to-number gs.timers.removal-animation.progress, gs.score.points
+      @parts.score.run-to-number gs.arena.zap-animation.progress, gs.score.points
       @parts.score.pulse gs.elapsed-time / 1000
 
     | \game =>
       gs.slowdown = 1
-      @parts.arena.update  gs, @jitter.position
+      @parts.arena.update gs, @jitter.position
       @parts.next-brick.display-shape gs.brick.next
       @parts.next-brick.update-wiggle gs
       @parts.score.set-number gs.score.points

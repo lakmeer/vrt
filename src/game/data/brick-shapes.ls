@@ -1,6 +1,4 @@
 
-# Reference
-
 export square =
   [[[0 0 0]
     [0 1 1]
