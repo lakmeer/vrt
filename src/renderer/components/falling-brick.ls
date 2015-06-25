@@ -21,9 +21,13 @@ export class FallingBrick extends Base
 
     @brick = new Brick @opts, gs
 
+    log opts
+
+    space-adjustment = (@grid - @opts.block-size) / 2
+
     @registration.add @brick.root
-    @registration.position.x = -3 * @grid
-    @registration.position.y = -1.5 * @grid
+    @registration.position.x = -3 * @grid - space-adjustment
+    @registration.position.y = -1.5 * @grid + space-adjustment
 
   display-shape: (brick) ->
     @brick.display-shape brick

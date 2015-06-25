@@ -26,7 +26,7 @@ export prime-game-state = (gs, options) ->
     drop-timer               : Timer.create "Drop timer",           options.starting-drop-speed, true
     key-repeat-timer         : Timer.create "Key repeat",           options.key-repeat-time
     soft-drop-wait-timer     : Timer.create "Soft-drop wait time",  options.soft-drop-wait-time
-    hard-drop-animation      : Timer.create "Hard-drop animation",  options.animation.hard-drop-effect-time
+    hard-drop-animation      : Timer.create "Hard-drop animation",  options.animation.hard-drop-effect-time, true
     preview-reveal-animation : Timer.create "Next brick animation", options.animation.preview-reveal-time
 
 export animation-time-for-rows = (rows) ->

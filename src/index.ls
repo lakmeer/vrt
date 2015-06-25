@@ -27,7 +27,7 @@ input-handler  = new InputHandler
 tetris-game    = new TetrisGame game-state, game-options
 renderer       = new ThreeJsRenderer render-options, game-state, game-options
 
-time-factor    = 10
+time-factor    = 1
 
 
 #

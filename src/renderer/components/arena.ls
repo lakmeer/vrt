@@ -39,7 +39,7 @@ export class Arena extends Base
     @registration.position.x = @opts.arena-offset-from-centre
 
   jolt: (gs) ->
-    p = max 0, (1 - gs.arena.jolt-animation.progress)
+    p = max 0, (1 - gs.core.hard-drop-animation.progress)
     zz = gs.core.rows-to-remove.length
     jolt = -1 * p * (1 + zz) * @opts.hard-drop-jolt-amount
 
@@ -90,4 +90,3 @@ export class Arena extends Base
 
     # Update internal state
     @state.frames-since-rows-removed += 1
-

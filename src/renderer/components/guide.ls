@@ -88,17 +88,18 @@ export class Guide extends Base
 
   show-flare: (p, dropped) ->
     if p is 0
+      log \show-flare, p, dropped, @state.last-shape?.pos
       g = @opts.grid-size
       @state.last-shape = beam-shape = @state.this-shape
       @flare.material.materials.map (.emissive?.set-hex beam-shape.color)
       x = @position-beam @flare, beam-shape
       @flare.scale.y = g * (1 + dropped)/@height
-      @flare.position.y = @height - g * (beam-shape.height) - g * dropped
+      @flare.position.y = @height - g * beam-shape.height
 
       @impact-light.hex = beam-shape.color
       @impact-light.position.x = x
       @impact-light.position.y = @height - g * beam-shape.height
 
     @flare.material.materials.map (.opacity = 1 - p)
-    #@impact-light.distance  = @opts.grid-size * 3 + @opts.grid-size * 3 * sin @gs.elapsed-time / 1000
+    @impact-light.distance  = @opts.grid-size * 3 + @opts.grid-size * 3 * sin @gs.elapsed-time / 1000
 
