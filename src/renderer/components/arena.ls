@@ -83,7 +83,7 @@ export class Arena extends Base
 
     # Show guide beams
     @parts.guide.show-beam brick.current
-    @parts.guide.show-flare arena.jolt-animation.progress, gs.hard-drop-distance
+    @parts.guide.show-flare gs.core.hard-drop-animation.progress, gs.core.hard-drop-distance
 
     # Return jolt effect value
     position-receiving-jolt.y = @jolt gs

@@ -27,7 +27,7 @@ input-handler  = new InputHandler
 tetris-game    = new TetrisGame game-state, game-options
 renderer       = new ThreeJsRenderer render-options, game-state, game-options
 
-time-factor    = 2
+time-factor    = 10
 
 
 #
@@ -104,3 +104,4 @@ test-easing = ->
     for i from 0 to 100
       p = i / 100
       ctx.fill-rect 2 * i, 200 - (ease p, 0, 200), 2, 2
+

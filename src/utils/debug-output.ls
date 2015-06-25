@@ -5,6 +5,14 @@
 
 Timer = require \../utils/timer
 
+type-detect = (thing) ->
+  if typeof thing isnt \object
+    typeof thing
+  else if thing.progress?
+    \timer
+  else
+    \object
+
 
 # Templates
 
@@ -26,20 +34,32 @@ template =
     else
       "(no change)"
 
-  normal: ->
+  fps: ->
     fps-color = if @fps >= 55 then \#0f0 else if @fps >= 30 then \#ff0 else \#f00
-    """
-    score - #{template.score.apply @score}
+    """<span style="color:#{ fps-color }">#{@fps}</span>"""
 
+  normal: ->
+    """
      meta - #{@metagame-state}
      time - #{@elapsed-time}
     frame - #{@elapsed-frames}
-      fps - <span style="color:#{ fps-color }">#{@fps}</span>
+      fps - #{template.fps.apply this}
      keys - #{template.keys.apply @input-state}
 
-     drop - #{Timer.to-string @core.drop-timer}
-      zap - #{Timer.to-string @arena.zap-animation}
+      #{template.dump @core, 2}
   """
+
+  timer: ->
+    Timer.to-string it
+
+  dump: (obj, depth = 0) ->
+    space = (" " * depth +)
+    switch type-detect obj
+    | \timer => space template.timer obj
+    | \string => space obj
+    | \number => space obj
+    | otherwise =>
+      "\n" + unlines [ k + ":" + template.dump v, depth + 2 for k, v of obj ]
 
   menu-items: -> """
     #{ unlines ( for item, ix in @menu-data => template.menu-item.call item, ix, @current-index ) }

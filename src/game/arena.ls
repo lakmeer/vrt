@@ -3,7 +3,7 @@
 
 { id, log, add-v2, rand-int, wrap, random-from } = require \std
 
-Brick     = require \./brick
+Brick = require \./brick
 Timer = require \../utils/timer
 
 
