@@ -86,28 +86,19 @@ export class Guide extends Base
     @guide-light.position.x = x
     @state.this-shape = beam-shape
 
-  position-flare: (flare, brick-height, drop-distance) ->
-    g = @opts.grid-size
-    flare.scale.y    = g * (1 + drop-distance)/@height
-    flare.position.y = @height - g * (brick-height) - g * drop-distance
-
-  show-flare: (p, drop-distance) ->
-    if true # p is 0
+  show-flare: (p, dropped) ->
+    if p is 0
+      g = @opts.grid-size
       @state.last-shape = beam-shape = @state.this-shape
-
-      x = @position-beam  @flare, beam-shape
-      y = @position-flare @flare, beam-shape.height, drop-distance
-
       @flare.material.materials.map (.emissive?.set-hex beam-shape.color)
+      x = @position-beam @flare, beam-shape
+      @flare.scale.y = g * (1 + dropped)/@height
+      @flare.position.y = @height - g * (beam-shape.height) - g * dropped
 
-      @show-impact-light x, beam-shape
+      @impact-light.hex = beam-shape.color
+      @impact-light.position.x = x
+      @impact-light.position.y = @height - g * beam-shape.height
 
-    #@flare.material.materials.map (.opacity = 1 - p)
-    @impact-light.intensity = 10 * ( 1 - p )
+    @flare.material.materials.map (.opacity = 1 - p)
     #@impact-light.distance  = @opts.grid-size * 3 + @opts.grid-size * 3 * sin @gs.elapsed-time / 1000
-
-  show-impact-light: (x, beam-shape) ->
-    @impact-light.hex = beam-shape.color
-    @impact-light.position.x = x
-    @impact-light.position.y = @height - @opts.grid-size * beam-shape.height
 
