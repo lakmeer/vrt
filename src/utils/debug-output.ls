@@ -8,6 +8,10 @@ Timer = require \../utils/timer
 type-detect = (thing) ->
   if typeof thing isnt \object
     typeof thing
+  else if thing.cells?
+    \arena
+  else if thing.pos?
+    \brick
   else if thing.progress?
     \timer
   else
@@ -46,7 +50,7 @@ template =
       fps - #{template.fps.apply this}
      keys - #{template.keys.apply @input-state}
 
-      #{template.dump @core, 2}
+      #{template.dump this, 2}
   """
 
   timer: ->
@@ -58,8 +62,10 @@ template =
     | \timer => space template.timer obj
     | \string => space obj
     | \number => space obj
+    | \arena => void
+    | \brick => void
     | otherwise =>
-      "\n" + unlines [ k + ":" + template.dump v, depth + 2 for k, v of obj ]
+      unlines [ k + ":" + template.dump v, depth + 2 for k, v of obj ]
 
   menu-items: -> """
     #{ unlines ( for item, ix in @menu-data => template.menu-item.call item, ix, @current-index ) }
@@ -68,6 +74,8 @@ template =
   start-menu: -> """
     START MENU
     #{ template.menu-items.apply this }
+
+    #{template.dump this, 2}
   """
 
   menu-item: (index, current-index) -> """

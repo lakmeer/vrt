@@ -67,6 +67,10 @@ export class ThreeJsRenderer
     @scene.show-helpers!
 
 
+  set-menu-facing: ->
+
+  set-game-facing: ->
+
   add-trackball: ->
     trackball-target = new THREE.Object3D
     trackball-target.position.z = -@opts.camera-distance-from-edge

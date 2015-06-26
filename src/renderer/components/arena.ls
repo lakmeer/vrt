@@ -1,5 +1,5 @@
 
-{ id, log, max, rand } = require \std
+{ id, log, max, rand, Ease } = require \std
 
 { Base }           = require \./base
 { Frame }          = require \./frame
@@ -40,8 +40,9 @@ export class Arena extends Base
 
   jolt: (gs) ->
     p = max 0, (1 - gs.core.hard-drop-animation.progress)
+    p = Ease.elastic-in p, 0, 1
     zz = gs.core.rows-to-remove.length
-    jolt = -1 * p * (1 + zz) * @opts.hard-drop-jolt-amount
+    jolt = -p * (1 + zz) * @opts.hard-drop-jolt-amount
 
   jitter: (gs) ->
     p      = 1 - gs.arena.zap-animation.progress
@@ -90,3 +91,4 @@ export class Arena extends Base
 
     # Update internal state
     @state.frames-since-rows-removed += 1
+
