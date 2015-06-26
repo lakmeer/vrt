@@ -1,4 +1,9 @@
 
+# Require
+
+game-options = require \./game
+
+
 # DPI on desk surface
 # For converting measurements made on textures to game units
 
@@ -47,4 +52,8 @@ module.exports =
   preview-distance-from-edge: p2m(656)     # Position of next-brick-preview display
   preview-distance-from-center: p2m(1002)  # Position of next-brick-preview display from center
   preview-scale-factor: 0.5                # Show next-brick-preview at smaller scale
+
+
+  # Proxy game options so renderer components can refer to them if necessary
+  game-options: game-options
 

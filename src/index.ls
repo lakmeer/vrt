@@ -22,9 +22,6 @@
 game-state     = { metagame-state: \no-game }
 game-options   = require \./config/game
 render-options = require \./config/scene
-
-render-options.game-options = game-options
-
 input-handler  = new InputHandler
 tetris-game    = new TetrisGame game-state, game-options
 renderer       = new ThreeJsRenderer render-options, game-state
