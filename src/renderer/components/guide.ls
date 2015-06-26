@@ -88,7 +88,6 @@ export class Guide extends Base
 
   show-flare: (p, dropped) ->
     if p is 0
-      log \show-flare, p, dropped, @state.last-shape?.pos
       g = @opts.grid-size
       @state.last-shape = beam-shape = @state.this-shape
       @flare.material.materials.map (.emissive?.set-hex beam-shape.color)
