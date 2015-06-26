@@ -1,7 +1,7 @@
 
 # Require
 
-{ id, log, add-v2, rand-int, wrap, random-from } = require \std
+{ id, log, add-v2, rand-int, wrap, random-from, Ease } = require \std
 
 Timer = require \../utils/timer
 
@@ -22,6 +22,7 @@ export prime-game-state = (gs, options) ->
     soft-drop-mode: off
     rows-to-remove: []
     rows-removed-this-frame: no
+    starting-drop-speed: options.starting-drop-speed
 
     drop-timer               : Timer.create "Drop timer",           options.starting-drop-speed, true
     key-repeat-timer         : Timer.create "Key repeat",           options.key-repeat-time
@@ -31,4 +32,7 @@ export prime-game-state = (gs, options) ->
 
 export animation-time-for-rows = (rows) ->
   10 + 3 ** rows.length
+
+export reset-drop-timer = (core) ->
+  Timer.reset core.drop-timer, core.starting-drop-speed
 

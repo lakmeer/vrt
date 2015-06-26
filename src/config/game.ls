@@ -11,8 +11,8 @@ export arena-height = 18
 export time-factor = 1
 
 # Speed and difficulty config
-export starting-drop-speed      = 300
-export speed-multiply-per-level = 0.95
+export starting-level      = 0
+export starting-drop-speed = 500
 
 # Gameplay wait times
 export key-repeat-time     = 100

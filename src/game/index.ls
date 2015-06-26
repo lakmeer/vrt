@@ -34,6 +34,7 @@ export class TetrisGame
     Arena.clear-arena gs.arena
     Score.reset-score gs.score
     Brick.reset-state gs.brick
+    Core.reset-drop-timer gs.core
     return gs
 
   reveal-start-menu: (gs) ->
@@ -102,6 +103,11 @@ export class TetrisGame
           gs.core.rows-removed-this-frame = yes
           Timer.reset gs.arena.zap-animation, Core.animation-time-for-rows gs.core.rows-to-remove
 
+        | \debug-7 =>
+          gs.score.level += 1
+          Timer.reset gs.core.drop-timer, Score.get-drop-timeout gs.score
+
+
       else if action is \up
         switch key
         | \down =>
@@ -132,6 +138,10 @@ export class TetrisGame
 
       # Add any dropped lines to score
       Score.update-score gs, gs.core.rows-to-remove
+
+      # Update drop timer speed in case level has progressed
+      Timer.reset gs.core.drop-timer, Score.get-drop-timeout gs.score
+
       return
 
     # Check if top has been reached. If so, change game mode to fail

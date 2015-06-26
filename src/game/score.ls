@@ -1,8 +1,7 @@
 
-
 # Require
 
-{ id, log, add-v2, rand-int, wrap, random-from } = require \std
+{ id, log, min, div, add-v2, rand-int, wrap, random-from } = require \std
 
 BrickShapes = require \./data/brick-shapes
 
@@ -22,7 +21,8 @@ export prime-game-state = (gs, options) ->
     doubles: 0
     triples: 0
     tetris: 0
-
+    level: options.starting-level
+    starting-level: options.starting-level
 
 #
 # Points computations
@@ -40,13 +40,16 @@ export compute-score = (rows, lvl = 0) ->
   | 3 => 300  * (lvl + 1)
   | 4 => 1200 * (lvl + 1)
 
+export get-drop-timeout = ({ level }) ->
+  (10 - (min 9, level)) * 50
+
 
 #
 # Score mutations
 #
 
 export update-score = ({ score }, rows, lvl = 0) ->
-  points = compute-score rows, lvl
+  points = compute-score rows, score.level
   score.points += points
   score.lines  += lines = rows.length
 
@@ -56,6 +59,9 @@ export update-score = ({ score }, rows, lvl = 0) ->
   | 3 => score.triples += 1
   | 4 => score.tetris  += 1
 
+  if score.lines `div` (score.level + 1) >= 10
+    score.level += 1
+
 export reset-score = (score) ->
   score <<< do
     points: 0
@@ -64,4 +70,5 @@ export reset-score = (score) ->
     doubles: 0
     triples: 0
     tetris: 0
+    level: score.starting-level
 
