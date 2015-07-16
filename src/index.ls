@@ -77,5 +77,5 @@ frame-driver.start!
 # Debug: jump straight to state we care about
 #
 
-tetris-game.begin-new-game game-state
+#tetris-game.begin-new-game game-state
 

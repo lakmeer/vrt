@@ -46,7 +46,7 @@ export exp-out = (t, b, e, c = e - b) -> c * ((-pow 2, -10 * t) + 1) + b
 # Trigonometric
 #
 
-export circ-in  = (t, b, e, c = e - b) -> log -c * (Math.sqrt (1 - t*t) - 1) + b
+export circ-in  = (t, b, e, c = e - b) -> -c * (Math.sqrt( 1 - t*t) - 1) + b
 export circ-out = (t, b, e, c = e - b) ->  c * (Math.sqrt (1 - t*t)    ) + b
 
 
@@ -58,16 +58,17 @@ elastic = (t, b, c, p, λ) ->
   if t is 0 then return b
   if t is 1 then return b + c
   s = if c < Math.abs c then p/4 else p/tau * Math.asin 1
+  #s *= 0.1
   λ s, p
 
-slack = 0.7
+slack = 0.6
 
-export elastic-in = (t, b, e, c = e - b, s = 1.70158) ->
+export elastic-in = (t, b, e, c = e - b) ->
   elastic t, b, e, slack, (s, p) ->
     -(c * Math.pow(2, 10 * (t -= 1)) * Math.sin( (t - s)*tau/p )) + b
 
-export elastic-out = (t, b, e, c = e - b, s = 1.70158) ->
-  log elastic t, b, e, slack, (s, p) ->
+export elastic-out = (t, b, e, c = e - b) ->
+  elastic t, b, e, slack, (s, p) ->
     c * Math.pow(2, -10 * t) * Math.sin( (t - s) * tau / p ) + c + b
 
 
@@ -101,7 +102,11 @@ easeOutBounce: function (x, t, b, c, d) {
 # Test Functions
 #
 
-draw-test-graphs = ->
+draw-test-graphs = do ->
+
+  top = 170
+  btm = 30
+  range = top - btm
 
   for el in document.query-selector-all \canvas
     el.style.display = \none
@@ -110,15 +115,24 @@ draw-test-graphs = ->
     cnv = document.create-element \canvas
     cnv.width = 200
     cnv.height = 200
-    cnv.style.background = \white
+    cnv.style.background = \lightblue
     cnv.style.border-left = "3px solid black"
     ctx = cnv.get-context \2d
     document.body.append-child cnv
 
+    ctx.stroke-style = \white
+    ctx.move-to 0, top + 0.5
+    ctx.line-to 200, top + 0.5
+    ctx.move-to 0, btm + 0.5
+    ctx.line-to 200, btm + 0.5
+    ctx.stroke!
+
     ctx.font = "14px monospace"
     ctx.fill-text ease-name, 2, 16, 200
 
+    ctx.fill-style = \blue
+
     for i from 0 to 100
       p = i / 100
-      ctx.fill-rect 2 * i, 200 - (ease p, 0, 200), 2, 2
+      ctx.fill-rect 2 * i, top - (ease p, 0, range), 2, 2
 
