@@ -11,6 +11,7 @@ THREE = require \three-js-vr-extensions # puts THREE in global scope
 { DebugCameraPositioner }      = require \./debug-camera
 
 { Arena, Table, StartMenu, FailScreen, Lighting, BrickPreview, NixieDisplay } = require \./components
+{ Topside } = require \./components
 
 { TrackballControls } = require \../../lib/trackball-controls.js
 
@@ -41,10 +42,14 @@ export class ThreeJsRenderer
       table       : new Table        @opts, gs
       lighting    : new Lighting     @opts, gs
       arena       : new Arena        @opts, gs
-      start-menu  : new StartMenu    @opts, gs
-      fail-screen : new FailScreen   @opts, gs
       next-brick  : new BrickPreview @opts, gs
       score       : new NixieDisplay @opts, gs
+
+      topside     : new Topside      @opts, gs
+        #underside   : new Underside
+      start-menu  : new StartMenu    @opts, gs
+      fail-screen : new FailScreen   @opts, gs
+
 
     for name, part of @parts => part.add-to @jitter
 

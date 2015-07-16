@@ -102,7 +102,7 @@ easeOutBounce: function (x, t, b, c, d) {
 # Test Functions
 #
 
-draw-test-graphs = do ->
+draw-test-graphs = ->
 
   top = 170
   btm = 30

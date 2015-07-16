@@ -10,6 +10,6 @@ export { BrickPreview } = require \./brick-preview
 export { Lighting }     = require \./lighting
 export { NixieDisplay } = require \./nixie
 
-export { StartMenu }    = require \./start-menu
-export { FailScreen }   = require \./fail-screen
+export { Topside }      = require \./topside
+export { Underside }    = require \./underside
 
