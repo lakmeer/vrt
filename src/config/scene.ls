@@ -35,7 +35,8 @@ module.exports =
 
   #camera-distance-from-edge: 0.2           # Horizontal distance from player's eyes to front of desk
   camera-distance-from-edge: 0.5           # Horizontal distance from player's eyes to front of desk
-  camera-elevation: 0.5                    # Vertical distance from desktop to player's eyes
+  #camera-elevation: 0.5                    # Vertical distance from desktop to player's eyes
+  camera-elevation: 0.0                    # Vertical distance from desktop to player's eyes
 
   arena-offset-from-centre: 0.085          # Adjust horizontal position of arena
   arena-distance-from-edge: 0.57           # Distance from front of desk to front of arena

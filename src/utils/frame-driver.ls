@@ -40,7 +40,7 @@ export class FrameDriver
 
   start: ->
     if @state.running is yes then return
-    log "FrameDriver::Start - starting"
+    #log "FrameDriver::Start - starting"
     @state.zero = Date.now!
     @state.time = 0
     @state.running = yes
@@ -48,7 +48,7 @@ export class FrameDriver
 
   stop: ->
     if @state.running is no then return
-    log "FrameDriver::Stop - stopping"
+    #log "FrameDriver::Stop - stopping"
     @state.running = no
 
   push-history: (Δt) ->
