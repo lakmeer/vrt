@@ -140,6 +140,20 @@ export zap =
     color: 0xffffff
     emissive: 0xffffff
 
+export zap-fade = [
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.0
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.1
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.2
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.3
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.4
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.5
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.6
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.7
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.8
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 0.9
+  new THREE.MeshPhongMaterial color: 0xffffff, emissive: 0xffffff, transparent: yes, opacity: 1.0
+]
+
 
 # Table Faces
 

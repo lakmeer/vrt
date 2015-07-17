@@ -30,6 +30,7 @@ export prime-game-state = (gs, options) ->
     current-state: menu-data[0]
     menu-data: menu-data
     reveal-animation: Timer.create "Game over reveal animation", options.animation.game-over-reveal-time
+    teardown-animation: Timer.create "Cells teardown animation", options.animation.tear-down-time
 
 export choose-option = (ms, index) ->
   ms.current-index = limiter index

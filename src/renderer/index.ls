@@ -93,7 +93,7 @@ export class ThreeJsRenderer
 
       switch gs.metagame-state
       | \remove-lines => fallthrough
-      | \game         => #@parts.topsi.arena.visible       = yes
+      | \game         => @parts.underside.show-falling-brick!
       | \start-menu   => @parts.topside.toggle-start-menu on
       #| \pause-menu   => @parts.pause-menu.visible  = yes
       #| \failure      => @parts.fail-screen.visible = yes
@@ -135,8 +135,11 @@ export class ThreeJsRenderer
       @parts.pause-menu.update gs
 
     | \failure =>
-      @parts.underside.next-brick.display-nothing!
       @parts.topside.update-fail-screen gs
+      @parts.underside.next-brick.display-nothing!
+      @parts.underside.show-teardown-effect gs.game-over.teardown-animation
+      @parts.underside.hide-falling-brick!
+      @jitter.rotation.x = Ease.elastic-out 1, 0, -pi
 
     | otherwise =>
       log "ThreeJsRenderer::render - Unknown metagamestate:", gs.metagame-state

@@ -1,7 +1,7 @@
 
 # Require
 
-{ id, log, pi } = require \std
+{ id, log, pi, floor } = require \std
 
 { Base } = require \./base
 
@@ -38,4 +38,14 @@ export class Underside extends Base
     # Flip underside via registration point
     @registration.rotation.set pi, 0, 0
     @registration.position.set 0, -@opts.desk-size.2, -@opts.desk-size.1
+
+  show-falling-brick: -> @arena.show-falling-brick!
+  hide-falling-brick: -> @arena.hide-falling-brick!
+
+  show-teardown-effect: (timer) ->
+    num-rows = @opts.game-options.arena-height
+    start-row = num-rows - floor num-rows * timer.progress
+
+    for i from 0 til num-rows
+      @arena.blink-row i, timer.progress
 

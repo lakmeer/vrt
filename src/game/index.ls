@@ -29,6 +29,8 @@ export class TetrisGame
     StartMenu.prime-game-state game-state, game-options
     GameOver.prime-game-state  game-state, game-options
 
+    @reveal-game-over game-state
+
   begin-new-game: (gs) ->
     gs.metagame-state = \game
     Arena.clear-arena gs.arena
@@ -44,6 +46,7 @@ export class TetrisGame
   reveal-game-over: (gs) ->
     gs.metagame-state = \failure
     Timer.reset gs.game-over.reveal-animation
+    Timer.reset gs.game-over.teardown-animation
 
   handle-key-input: ({ brick, arena, input }:gs) ->
     while input.length
@@ -188,6 +191,9 @@ export class TetrisGame
             @reveal-start-menu gs
         | \action-a, \confirm =>
           @begin-new-game gs
+        | \debug-9 =>
+          Timer.reset gs.game-over.teardown-animation
+
 
   start-menu-tick: ({ input, start-menu }:gs) ->
     while input.length
