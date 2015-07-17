@@ -158,8 +158,8 @@ export table-faces =
   new THREE.MeshFaceMaterial [
     table-edge
     table-edge
-    table-top
     table-edge
+    table-top
     table-edge
     table-edge
   ]

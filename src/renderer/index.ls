@@ -10,8 +10,8 @@ THREE = require \three-js-vr-extensions # puts THREE in global scope
 { SceneManager }               = require \./scene-manager
 { DebugCameraPositioner }      = require \./debug-camera
 
-{ Arena, Table, StartMenu, FailScreen, Lighting, BrickPreview, NixieDisplay } = require \./components
-{ Topside } = require \./components
+{ Arena, Table, Lighting, BrickPreview, NixieDisplay } = require \./components
+{ Topside, Underside } = require \./components
 
 { TrackballControls } = require \../../lib/trackball-controls.js
 
@@ -41,21 +41,11 @@ export class ThreeJsRenderer
     @parts =
       table       : new Table        @opts, gs
       lighting    : new Lighting     @opts, gs
-      arena       : new Arena        @opts, gs
-      next-brick  : new BrickPreview @opts, gs
-      score       : new NixieDisplay @opts, gs
-
       topside     : new Topside      @opts, gs
-        #underside   : new Underside
-      start-menu  : new StartMenu    @opts, gs
-      fail-screen : new FailScreen   @opts, gs
+      underside   : new Underside    @opts, gs
 
 
     for name, part of @parts => part.add-to @jitter
-
-    # Arrangement of scene components
-    @parts.next-brick.root.position.set -@opts.preview-distance-from-center, 0, -@opts.preview-distance-from-edge
-    @parts.arena.root.position.set 0, 0, -@opts.arena-distance-from-edge
 
     # Controls
     @add-trackball!
@@ -94,15 +84,15 @@ export class ThreeJsRenderer
 
     # Show/hide different components when metagamestate changes
     if gs.metagame-state isnt @state.last-seen-state
-      @parts.start-menu.visible = no
-      @parts.arena.visible      = no
+      @parts.topside.toggle-start-menu off
+      #@parts.arena.visible      = no
       #@parts.pause-menu.visible = no
       #@parts.fail-screen.visible  = no
 
       switch gs.metagame-state
       | \remove-lines => fallthrough
       | \game         => @parts.arena.visible       = yes
-      | \start-menu   => @parts.start-menu.visible  = yes
+      | \start-menu   => @parts.topside.toggle-start-menu on
       #| \pause-menu   => @parts.pause-menu.visible  = yes
       #| \failure      => @parts.fail-screen.visible = yes
       | otherwise     => void
@@ -117,36 +107,36 @@ export class ThreeJsRenderer
       rows = gs.core.rows-to-remove.length
       p = gs.arena.zap-animation.progress
       gs.slowdown = 1 + Ease.exp-in p, 2, 0
-      @parts.arena.zap-lines gs, @jitter.position
-      @parts.next-brick.update-wiggle gs
-      @parts.score.run-to-number gs.arena.zap-animation.progress, gs.score.points
-      @parts.score.pulse gs.elapsed-time / 1000
+      @parts.underside.arena.zap-lines gs, @jitter.position
+      @parts.underside.next-brick.update-wiggle gs
+      @parts.underside.score.run-to-number gs.arena.zap-animation.progress, gs.score.points
+      @parts.underside.score.pulse gs.elapsed-time / 1000
 
     | \game =>
       gs.slowdown = 1
-      @parts.arena.update gs, @jitter.position
-      @parts.next-brick.display-shape gs.brick.next
-      @parts.next-brick.update-wiggle gs
-      @parts.score.set-number gs.score.points
-      @parts.score.pulse gs.elapsed-time / 1000
+      @parts.underside.arena.update gs, @jitter.position
+      @parts.underside.next-brick.display-shape gs.brick.next
+      @parts.underside.next-brick.update-wiggle gs
+      @parts.underside.score.set-number gs.score.points
+      @parts.underside.score.pulse gs.elapsed-time / 1000
 
     | \start-menu =>
-      @parts.next-brick.display-nothing!
-      @parts.start-menu.update gs
+      @parts.underside.next-brick.display-nothing!
+      @parts.topside.update-start-menu gs
 
     | \pause-menu =>
-      @parts.next-brick.display-nothing!
+      @parts.underside.next-brick.display-nothing!
       @parts.pause-menu.update gs
 
     | \failure =>
-      @parts.next-brick.display-nothing!
-      @parts.fail-screen.update gs
+      @parts.underside.next-brick.display-nothing!
+      @parts.topside.update-fail-screen gs
 
     | otherwise =>
       log "ThreeJsRenderer::render - Unknown metagamestate:", gs.metagame-state
 
     # Update particles all the time, cos they're physically simulated
-    @parts.arena.update-particles gs
+    @parts.underside.arena.update-particles gs
 
     # Update private state
     @state.last-seen-state = gs.metagame-state
