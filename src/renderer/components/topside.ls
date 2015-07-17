@@ -22,8 +22,10 @@ export class Topside extends Base
     @start-menu  = new StartMenu  @opts, gs
     @fail-screen = new FailScreen @opts, gs
 
-    @start-menu.add-to  @root
-    @fail-screen.add-to @root
+    @start-menu.add-to  @registration
+    @fail-screen.add-to @registration
+
+    @registration.position.z = @opts.desk-size.1/2
 
   toggle-start-menu: (state) ->
     @start-menu.visible = state

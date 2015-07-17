@@ -37,6 +37,7 @@ export class Brick extends Base
     @cells =
       for i from 0 to 3
         cube = new THREE.Mesh block-geo, Materials.normal
+        cube.visible = no
         @brick.add cube
         cube
 
@@ -61,4 +62,5 @@ export class Brick extends Base
           ..position.x = (offset.0 + 0.5 + x) * grid + margin
           ..position.y = (offset.1 + 0.5 + y) * grid + margin
           ..material = Materials.blocks[cell]
+          ..visible = yes
 

@@ -34,6 +34,7 @@ export create = (name = "Unnamed Timer", target-time = 1000, begin = no) ->
   expired : not begin
   time-to-expiry : target-time
   name: name
+  idle-at-zero: no
 
 
 # Important functions
@@ -93,6 +94,9 @@ set-state = (timer, state) ->
   timer.state = state
   timer.expired = state is TIMER_EXPIRED
   timer.active = state isnt TIMER_EXPIRED
+
+  if state is TIMER_EXPIRED and timer.idle-at-zero
+    timer.progress = 0
 
 set-time = (timer, time) ->
   timer.current-time = time

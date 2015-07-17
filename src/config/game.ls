@@ -26,4 +26,5 @@ export animation =
   preview-reveal-time   : 300
   title-reveal-time     : 4000
   game-over-reveal-time : 4000
+  table-flip-time       : 1000
 

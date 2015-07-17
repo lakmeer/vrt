@@ -36,16 +36,22 @@ export class ThreeJsRenderer
 
     # Jitter offset object - absorbs jitter movements so they don't disturb camera position
     @scene.add @jitter = new THREE.Object3D
+    @jitter.add @pivot = new THREE.Object3D
 
     # Build scene
     @parts =
-      table       : new Table        @opts, gs
-      lighting    : new Lighting     @opts, gs
-      topside     : new Topside      @opts, gs
-      underside   : new Underside    @opts, gs
+      table     : new Table     @opts, gs
+      lighting  : new Lighting  @opts, gs
+      topside   : new Topside   @opts, gs
+      underside : new Underside @opts, gs
 
+    @parts.table.add-to     @pivot
+    @parts.topside.add-to   @pivot
+    @parts.underside.add-to @pivot
+    @parts.lighting.add-to  @scene.registration
 
-    for name, part of @parts => part.add-to @jitter
+    # Set pivot position
+    @pivot.position.set 0, @opts.desk-size.2/2, @opts.desk-size.1/2
 
     # Controls
     @add-trackball!
@@ -56,15 +62,10 @@ export class ThreeJsRenderer
     # We do this by moving the scene away instead of positioning the camera,
     # because if the VR mode kicks in, VRControls will set the camera position
     # based on the HMD's tracking data, relative to 0,0,0, not to your new pos.
-    @scene.registration.position.set 0, -@opts.camera-elevation, -@opts.camera-distance-from-edge * 4
+    @scene.registration.position.set 0, -@opts.camera-elevation, -@opts.camera-distance-from-edge * 4 - @opts.desk-size.1/2
 
     # Helpers
     @scene.show-helpers!
-
-
-  set-menu-facing: ->
-
-  set-game-facing: ->
 
   add-trackball: ->
     trackball-target = new THREE.Object3D
@@ -76,22 +77,23 @@ export class ThreeJsRenderer
   append-to: (host) ->
     host.append-child @scene.dom-element
 
+  set-table-flip: (state) ->
+    if state
+      @scene.registration.rotation.set 0, 0, 0
+    else
+      @scene.registration.rotation.set pi, 0, 0
+
   render: (gs) ->
     @trackball.update!
     @scene.update!
 
-    #@scene.registration.position.y = -0.5 + -0.5 * sin gs.elapsed-time / 1000
-
     # Show/hide different components when metagamestate changes
     if gs.metagame-state isnt @state.last-seen-state
       @parts.topside.toggle-start-menu off
-      #@parts.arena.visible      = no
-      #@parts.pause-menu.visible = no
-      #@parts.fail-screen.visible  = no
 
       switch gs.metagame-state
       | \remove-lines => fallthrough
-      | \game         => @parts.arena.visible       = yes
+      | \game         => #@parts.topsi.arena.visible       = yes
       | \start-menu   => @parts.topside.toggle-start-menu on
       #| \pause-menu   => @parts.pause-menu.visible  = yes
       #| \failure      => @parts.fail-screen.visible = yes
@@ -119,10 +121,14 @@ export class ThreeJsRenderer
       @parts.underside.next-brick.update-wiggle gs
       @parts.underside.score.set-number gs.score.points
       @parts.underside.score.pulse gs.elapsed-time / 1000
+      if gs.start-menu.flip-animation.progress
+        @jitter.rotation.x = Ease.elastic-out that, 0, -pi
 
     | \start-menu =>
       @parts.underside.next-brick.display-nothing!
       @parts.topside.update-start-menu gs
+      if gs.start-menu.flip-animation.progress
+        @jitter.rotation.x = Ease.elastic-out that, pi, 0
 
     | \pause-menu =>
       @parts.underside.next-brick.display-nothing!

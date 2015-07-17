@@ -61,7 +61,7 @@ elastic = (t, b, c, p, λ) ->
   #s *= 0.1
   λ s, p
 
-slack = 0.6
+slack = 0.5
 
 export elastic-in = (t, b, e, c = e - b) ->
   elastic t, b, e, slack, (s, p) ->

@@ -30,10 +30,14 @@ export prime-game-state = (gs, options) ->
     current-state: menu-data[0]
     menu-data: menu-data
     title-reveal-animation: Timer.create "Title reveal animation", options.animation.title-reveal-time
+    flip-animation: Timer.create "Table flip animation", options.animation.table-flip-time
+
+  gs.start-menu.flip-animation.idle-at-zero = on
+
+  return gs
 
 export update = (gs) ->
   return handle-input gs, gs.input
-
 
 
 #
