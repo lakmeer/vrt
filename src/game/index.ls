@@ -41,8 +41,10 @@ export class TetrisGame
     StartMenu.begin-reveal gs
 
   reveal-game-over: (gs) ->
-    gs.metagame-state = \failure
-    Timer.reset gs.game-over.reveal-animation
+    gs.metagame-state = \start-menu
+    StartMenu.begin-reveal gs
+    #gs.metagame-state = \failure
+    #Timer.reset gs.game-over.reveal-animation
 
   handle-key-input: ({ brick, arena, input }:gs) ->
     while input.length
@@ -160,6 +162,7 @@ export class TetrisGame
     @handle-key-input gs
 
   game-over-tick: ({ input, game-over }:gs, Δt) ->
+    log \game-over
     while input.length
       { key, action } = input.shift!
       if action is \down
