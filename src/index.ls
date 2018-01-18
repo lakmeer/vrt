@@ -14,6 +14,8 @@
 
 <- document.add-event-listener \DOMContentLoaded
 
+log navigator.getVRDisplays
+log navigator.getVRDevices
 
 #
 # Setup
@@ -33,7 +35,7 @@ time-factor    = 1
 # Debug
 #
 
-debug-output = new DebugOutput
+#debug-output = new DebugOutput
 
 InputHandler.on 192, ->
   if frame-driver.state.running
@@ -77,5 +79,5 @@ frame-driver.start!
 # Debug: jump straight to state we care about
 #
 
-tetris-game.begin-new-game game-state
+#tetris-game.begin-new-game game-state
 

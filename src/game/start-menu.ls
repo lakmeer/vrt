@@ -10,7 +10,7 @@ Timer = require \../utils/timer
 
 menu-data = [
   { state: \start-game, text: "Start Game" }
-  { state: \nothing, text: "Don't Start Game" }
+#  { state: \nothing, text: "Don't Start Game" }
 ]
 
 limiter = wrap 0, menu-data.length - 1
