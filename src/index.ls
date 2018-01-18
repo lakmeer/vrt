@@ -80,4 +80,29 @@ frame-driver.start!
 #
 
 #tetris-game.begin-new-game game-state
+#delay 30000, frame-driver~stop
+#tetris-game.begin-new-game game-state
+#InputHandler.debug-mode!  # Prints incoming keys
+
+test-easing = ->
+  { Ease } = require \std
+
+  for el in document.query-selector-all \canvas
+    el.style.display = \none
+
+  for ease-name, ease of Ease
+    cnv = document.create-element \canvas
+    cnv.width = 200
+    cnv.height = 200
+    cnv.style.background = \white
+    cnv.style.border-left = "3px solid black"
+    ctx = cnv.get-context \2d
+    document.body.append-child cnv
+
+    ctx.font = "14px monospace"
+    ctx.fill-text ease-name, 2, 16, 200
+
+    for i from 0 to 100
+      p = i / 100
+      ctx.fill-rect 2 * i, 200 - (ease p, 0, 200), 2, 2
 
