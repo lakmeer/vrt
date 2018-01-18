@@ -29,6 +29,8 @@ export class TetrisGame
     StartMenu.prime-game-state game-state, game-options
     GameOver.prime-game-state  game-state, game-options
 
+    @reveal-game-over game-state
+
   begin-new-game: (gs) ->
     gs.metagame-state = \game
     Arena.clear-arena gs.arena
@@ -44,6 +46,7 @@ export class TetrisGame
   reveal-game-over: (gs) ->
     gs.metagame-state = \failure
     Timer.reset gs.game-over.reveal-animation
+    Timer.reset gs.game-over.teardown-animation
 
   handle-key-input: ({ brick, arena, input }:gs) ->
     while input.length
@@ -107,6 +110,8 @@ export class TetrisGame
           gs.score.level += 1
           Timer.reset gs.core.drop-timer, Score.get-drop-timeout gs.score
 
+        | \debug-8 =>
+          Timer.reset gs.start-menu.flip-animation
 
       else if action is \up
         switch key
@@ -182,10 +187,13 @@ export class TetrisGame
           if game-over.current-state.state is \restart
             @begin-new-game gs
           else if game-over.current-state.state is \go-back
+            Timer.reset gs.start-menu.flip-animation
             @reveal-start-menu gs
         | \action-a, \confirm =>
-
           @begin-new-game gs
+        | \debug-9 =>
+          Timer.reset gs.game-over.teardown-animation
+
 
   start-menu-tick: ({ input, start-menu }:gs) ->
     while input.length
@@ -199,7 +207,10 @@ export class TetrisGame
           StartMenu.select-next-item start-menu
         | \action-a, \confirm =>
           if start-menu.current-state.state is \start-game
+            Timer.reset gs.start-menu.flip-animation
             @begin-new-game gs
+        | \debug-8 =>
+          Timer.reset gs.start-menu.flip-animation
 
   update: (gs, { Δt, time, frame, fps, input }) ->
     gs.fps            = fps

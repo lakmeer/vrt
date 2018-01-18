@@ -38,6 +38,9 @@ export class Arena extends Base
 
     @registration.position.x = @opts.arena-offset-from-centre
 
+  show-falling-brick: -> @parts.this-brick.visible = yes
+  hide-falling-brick: -> @parts.this-brick.visible = no
+
   jolt: (gs) ->
     p = max 0, (1 - gs.core.hard-drop-animation.progress)
     p = Ease.elastic-in p, 0, 1
@@ -48,6 +51,9 @@ export class Arena extends Base
     p      = 1 - gs.arena.zap-animation.progress
     zz     = gs.core.rows-to-remove.length * @opts.grid-size / 40  # Jitter size = 10% - 40% of block size
     jitter = [ p*(rand -zz, zz), p*(rand -zz, zz) ]
+
+  blink-row: (row-ix, fade) ->
+    @parts.arena-cells.fake-zap-line row-ix, fade
 
   zap-lines: (gs, position-receiving-jolt) ->
 

@@ -31,7 +31,7 @@ export class SceneManager
 
     # VR camera and distortion
     @vr-effect = new THREE.VREffect @renderer
-    @vr-effect.setSize window.innerWidth - 1, window.innerHeight - 1
+    @vr-effect.setSize window.innerWidth - 3, window.innerHeight - 4
 
     # Bind listeners
     window.addEventListener \keydown, @zero-sensor, true

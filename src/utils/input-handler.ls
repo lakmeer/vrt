@@ -4,6 +4,7 @@
 { id, log, filter } = require \std
 { Timer } = require \./timer
 
+
 # Reference Constants
 
 key-repeat-time = 150

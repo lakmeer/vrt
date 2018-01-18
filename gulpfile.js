@@ -2,6 +2,7 @@
 // Require
 
 var gulp       = require('gulp'),
+    gutil      = require('gulp-util'),
     browserify = require('browserify'),
     connect    = require('gulp-connect'),
     source     = require('vinyl-source-stream');
@@ -13,10 +14,17 @@ function reload (files) {
   gulp.src(files.path).pipe(connect.reload());
 }
 
-function handle (error) {
-  console.log(error);
-  this.emit('end');
+function prettyLog (label, text) {
+  gutil.log( gutil.colors.bold("  " + label + " | ") + text );
 }
+
+function handle (err){
+  gutil.log( gutil.colors.red("Error: ") + gutil.colors.yellow(err.plugin) );
+  if (err.message)    { prettyLog("message", err.message); }
+  if (err.fileName)   { prettyLog("in file", err.fileName); }
+  if (err.lineNumber) { prettyLog("on line", err.lineNumber); }
+  return this.emit('end');
+};
 
 
 // Preconfigure bundler
