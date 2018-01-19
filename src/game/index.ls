@@ -29,7 +29,10 @@ export class TetrisGame
     StartMenu.prime-game-state game-state, game-options
     GameOver.prime-game-state  game-state, game-options
 
-    @reveal-game-over game-state
+    @reveal-start-menu game-state
+
+    # TEMP
+    @arena-height = game-options.arena-height
 
   begin-new-game: (gs) ->
     gs.metagame-state = \game
@@ -44,10 +47,12 @@ export class TetrisGame
     StartMenu.begin-reveal gs
 
   reveal-game-over: (gs) ->
-    gs.metagame-state = \start-menu
-    StartMenu.begin-reveal gs
-    #gs.metagame-state = \failure
-    #Timer.reset gs.game-over.reveal-animation
+    gs.metagame-state = \failure
+    Timer.reset gs.game-over.reveal-animation
+    gs.core.rows-to-remove = [0 til @arena-height]
+    gs.metagame-state = \remove-lines
+    gs.core.rows-removed-this-frame = yes
+    Timer.reset gs.arena.zap-animation, Core.animation-time-for-rows gs.core.rows-to-remove
 
   handle-key-input: ({ brick, arena, input }:gs) ->
     while input.length
@@ -114,6 +119,12 @@ export class TetrisGame
         | \debug-8 =>
           Timer.reset gs.start-menu.flip-animation
 
+        | \debug-9 =>
+          gs.core.rows-to-remove = [0 til @arena-height]
+          gs.metagame-state = \remove-lines
+          gs.core.rows-removed-this-frame = yes
+          Timer.reset gs.arena.zap-animation, Core.animation-time-for-rows gs.core.rows-to-remove
+
       else if action is \up
         switch key
         | \down =>
@@ -176,7 +187,10 @@ export class TetrisGame
     @handle-key-input gs
 
   game-over-tick: ({ input, game-over }:gs, Δt) ->
-    log \game-over
+    if gs.game-over.reveal-animation.expired
+      @reveal-start-menu gs
+
+    /*
     while input.length
       { key, action } = input.shift!
       if action is \down
@@ -195,7 +209,7 @@ export class TetrisGame
           @begin-new-game gs
         | \debug-9 =>
           Timer.reset gs.game-over.teardown-animation
-
+    */
 
   start-menu-tick: ({ input, start-menu }:gs) ->
     while input.length

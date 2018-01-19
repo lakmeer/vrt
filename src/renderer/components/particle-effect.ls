@@ -40,13 +40,13 @@ export class ParticleBurst extends Base
     geometry.add-attribute \opacity,  @alpha-attr
     geometry.compute-bounding-sphere!
 
-    material = new THREE.PointCloudMaterial do
+    material = new THREE.PointsMaterial do
       size: @size
       transparent: true
       blending: THREE.AdditiveBlending
       vertex-colors: THREE.VertexColors
 
-    @root.add new THREE.PointCloud geometry, material
+    @root.add new THREE.Points geometry, material
 
 
   # Reset
@@ -145,19 +145,16 @@ export class ParticleBurst extends Base
 
 export class ParticleEffect extends Base
 
-  (@opts, {{ width, height }:arena }:gs) ->
+  (@opts, {{ width, height }:arena }:gs, num-rows) ->
 
     super ...
 
     @z = @opts.z
     @h = height
 
-    @rows = [
-      new ParticleBurst ...
-      new ParticleBurst ...
-      new ParticleBurst ...
-      new ParticleBurst ...
-    ]
+    @rows =
+      for i from 0 til num-rows
+        new ParticleBurst ...
 
     for row in @rows
       row.add-to @root

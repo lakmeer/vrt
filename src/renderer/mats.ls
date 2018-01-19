@@ -18,25 +18,25 @@ asset-path = ("assets/" +)
 textures =
   nixie-digits-color:
     for i from 0 to 9
-      THREE.ImageUtils.load-texture asset-path "digit-#i.col.png"
+      new THREE.TextureLoader!load asset-path "digit-#i.col.png"
 
   nixie-bg-color:
-    THREE.ImageUtils.load-texture asset-path "digit-bg.col.png"
+    new THREE.TextureLoader!load asset-path "digit-bg.col.png"
 
   block-tile-normal:
-    THREE.ImageUtils.load-texture asset-path "tile.nrm.png"
+    new THREE.TextureLoader!load asset-path "tile.nrm.png"
 
   table-top-color:
-    THREE.ImageUtils.load-texture asset-path "board.col.png"
+    new THREE.TextureLoader!.load asset-path "board.col.png"
 
   table-edge-color:
-    THREE.ImageUtils.load-texture asset-path "board-f.col.png"
+    new THREE.TextureLoader!load asset-path "board-f.col.png"
 
   table-top-specular:
-    THREE.ImageUtils.load-texture asset-path "board.spec.png"
+    new THREE.TextureLoader!load asset-path "board.spec.png"
 
   flare-alpha:
-    THREE.ImageUtils.load-texture asset-path "flare.alpha.png"
+    new THREE.TextureLoader!load asset-path "flare.alpha.png"
 
 
 
@@ -51,7 +51,6 @@ export empty =
   new THREE.MeshBasicMaterial do
     visible: no
     color: 0x0
-    emissive: 0x0
     opacity: 0
 
 export normal =
@@ -116,23 +115,23 @@ export nixie-bg =
 
 export blocks =
   for color, i in Palette.tile-colors
-    new THREE.MeshPhongMaterial do
-      metal: true
+    new THREE.MeshStandardMaterial do
+      metalness: 0.8
       color: color
-      specular: Palette.spec-colors[i]
-      shininess: 100
+      #specular: Palette.spec-colors[i]
+      #shininess: 100
       normal-map: textures.block-tile-normal
 
 export holo-blocks =
   for color, i in Palette.tile-colors
-    new THREE.MeshPhongMaterial do
-      metal: true
+    new THREE.MeshStandardMaterial do
+      metalness: 0.8
       color: color
       transparent: true
       emissive: 0xffffff
       opacity: 0.5
-      specular: Palette.spec-colors[i]
-      shininess: 100
+      #specular: Palette.spec-colors[i]
+      #shininess: 100
       normal-map: textures.block-tile-normal
 
 export zap =
@@ -169,7 +168,7 @@ export table-edge =
     map: textures.table-edge-color
 
 export table-faces =
-  new THREE.MeshFaceMaterial [
+  [
     table-edge
     table-edge
     table-edge
@@ -190,7 +189,7 @@ export lines =
 # Holograms
 
 export flare =
-  new THREE.MeshPhongMaterial do
+  new THREE.MeshStandardMaterial do
     color: 0x0
     transparent: true
     emissive: \white
@@ -200,5 +199,5 @@ export flare =
     alpha-map: textures.flare-alpha
 
 export flare-faces =
-  new THREE.MeshFaceMaterial [ flare, flare, empty, empty, flare, flare ]
+  [ flare, flare, empty, empty, flare, flare ]
 

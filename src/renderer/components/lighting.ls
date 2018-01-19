@@ -18,7 +18,7 @@ export class Lighting extends Base
     super ...
 
     @light = new THREE.PointLight 0xffffff, 1, main-light-distance
-    @light.position.set 0, 1, 0
+    @light.position.set 0, 1.4, 1
     @registration.add @light
 
     @spotlight = new THREE.SpotLight 0xffffff, 1, 50, 1
@@ -32,15 +32,15 @@ export class Lighting extends Base
     # Shadows
     @spotlight.cast-shadow = yes
 
-    @spotlight.shadow-darkness = 0.5
-    @spotlight.shadow-bias = 0.0001
-    @spotlight.shadow-map-width = 1024
-    @spotlight.shadow-map-height = 1024
+    #@spotlight.shadow-darkness = 0.5
+    @spotlight.shadow.bias = 0.0001
+    @spotlight.shadow.map-size.width = 1024
+    @spotlight.shadow.map-size.height = 1024
 
-    @spotlight.shadow-camera-visible = yes
-    @spotlight.shadow-camera-near = 10
-    @spotlight.shadow-camera-far = 2500
-    @spotlight.shadow-camera-fov = 50
+    #@spotlight.shadow-camera-visible = yes
+    @spotlight.shadow.camera.near = 10
+    @spotlight.shadow.camera.far = 2500
+    @spotlight.shadow.camera.fov = 50
 
   show-helpers: ->
     @registration.add new THREE.PointLightHelper @light, main-light-distance

@@ -32,7 +32,7 @@ export class Arena extends Base
       guide       : new Guide          @opts, gs
       arena-cells : new ArenaCells     @opts, gs
       this-brick  : new FallingBrick   @opts, gs
-      particles   : new ParticleEffect @opts, gs
+      particles   : new ParticleEffect @opts, gs, @opts.game-options.arena-height
 
     for name, part of @parts => part.add-to @registration
 

@@ -14,8 +14,6 @@
 
 <- document.add-event-listener \DOMContentLoaded
 
-log navigator.getVRDisplays
-log navigator.getVRDevices
 
 #
 # Setup
@@ -79,9 +77,7 @@ frame-driver.start!
 # Debug: jump straight to state we care about
 #
 
-#tetris-game.begin-new-game game-state
 #delay 30000, frame-driver~stop
-#tetris-game.begin-new-game game-state
 #InputHandler.debug-mode!  # Prints incoming keys
 
 test-easing = ->

@@ -31,7 +31,7 @@ export prime-game-state = (gs, options) ->
     preview-reveal-animation : Timer.create "Next brick animation", options.animation.preview-reveal-time
 
 export animation-time-for-rows = (rows) ->
-  10 + 3 ** rows.length
+  10 + 40 * rows.length
 
 export reset-drop-timer = (core) ->
   Timer.reset core.drop-timer, core.starting-drop-speed

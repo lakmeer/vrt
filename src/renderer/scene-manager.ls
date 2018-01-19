@@ -54,8 +54,8 @@ export class SceneManager
 
   show-helpers: ->
     grid      = new THREE.GridHelper 10, 0.1
-    axis      = new THREE.AxisHelper 1
-    root-axis = new THREE.AxisHelper 0.5
+    axis      = new THREE.AxesHelper 1
+    root-axis = new THREE.AxesHelper 0.5
     axis.position.z = @registration.position.z
     root-axis.position.z = @root.position.z
     #@scene.add axis, root-axis

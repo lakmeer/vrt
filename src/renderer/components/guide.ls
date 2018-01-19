@@ -41,7 +41,7 @@ export class Guide extends Base
     geo.apply-matrix new THREE.Matrix4!make-translation 0, @height/2, 0
 
     beam-mat  = Materials.flare-faces
-    flare-mat = Materials.flare-faces.clone!
+    flare-mat = Materials.flare-faces.map (.clone!)
 
     @beam  = new THREE.Mesh geo, beam-mat
     @flare = new THREE.Mesh geo, flare-mat
@@ -90,7 +90,7 @@ export class Guide extends Base
     if p is 0
       g = @opts.grid-size
       @state.last-shape = beam-shape = @state.this-shape
-      @flare.material.materials.map (.emissive?.set-hex beam-shape.color)
+      @flare.material.map (.emissive?.set-hex beam-shape.color)
       x = @position-beam @flare, beam-shape
       @flare.scale.y = g * (1 + dropped)/@height
       @flare.position.y = @height - g * beam-shape.height
@@ -99,6 +99,6 @@ export class Guide extends Base
       @impact-light.position.x = x
       @impact-light.position.y = @height - g * beam-shape.height
 
-    @flare.material.materials.map (.opacity = 1 - p)
+    @flare.material.map (.opacity = 1 - p)
     @impact-light.distance  = @opts.grid-size * 3 + @opts.grid-size * 3 * sin @gs.elapsed-time / 1000
 

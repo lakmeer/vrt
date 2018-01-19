@@ -61,7 +61,7 @@ export class StartMenu extends Base
 
   create-option-quad: (option, ix) ->
     image = canvas-texture text: option.text, width: 60, height: 10
-    tex   = THREE.ImageUtils.load-texture image
+    tex   = new THREE.TextureLoader!load image
     geom  = new THREE.PlaneBufferGeometry 1, 0.2
     mat   = new THREE.MeshPhongMaterial map: tex, alpha-map: tex, transparent: yes
     quad  = new THREE.Mesh geom, mat

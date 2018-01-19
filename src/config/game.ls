@@ -22,10 +22,10 @@ export soft-drop-wait-time = 100
 export animation =
   zap-animation-time    : 500
   jolt-animation-time   : 500
-  hard-drop-effect-time : 100
+  hard-drop-effect-time : 1000
   preview-reveal-time   : 300
   title-reveal-time     : 4000
-  game-over-reveal-time : 4000
+  game-over-reveal-time : 1000
   table-flip-time       : 1000
   tear-down-time        : 300
 

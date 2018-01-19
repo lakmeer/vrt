@@ -23,7 +23,7 @@ module.exports =
   units-per-meter: 1                       # Global scaling factor for feel-correctness
 
   hard-drop-jolt-amount: 0.03              # Maximum excursion of 'jolt' effect when bricks land
-  zap-particle-size: 0.008                 # Size in meters of zap particles
+  zap-particle-size: 0.01                  # Size in meters of zap particles
 
 
   # Scene composition
